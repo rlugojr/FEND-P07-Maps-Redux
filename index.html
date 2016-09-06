@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta http-equiv="x-ua-compatible" content="ie=edge">
+		<meta name="description" content="My Bucket List Nav Points">
+		<title>Bucket List of Sites to See</title>
+
+		<link rel="stylesheet" href="css/awesomplete.css" />
+		<link rel="stylesheet" href="css/style.css" />
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+		<script src='js/knockout-3.4.0.js'></script>
+		<script src='js/awesomplete.min.js'></script>
+		<script src='js/app.js'></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4Sx-EmG0FVrUBwkOuk9Btwv2cW3jjuZg"></script>
+		<style type="text/css">
+			#map {
+				width: 100%;
+				height: 100%
+			}
+		</style>
+		<script type="text/javascript">
+			var map;
+
+			function initMap() {
+				google.maps.visualRefresh = true;
+
+				var mapOptions = {
+					center: new google.maps.LatLng(-22.9518763, -43.2112374),
+					zoom: 3,
+					mapTypeID: google.maps.MapTypeId.ROADMAP
+				};
+
+				var mapElement = document.getElementById('mapDiv');
+				map = new google.maps.Map(mapElement, mapOptions);
+
+				ko.applyBindings(new ViewModel());
+			}
+
+			google.maps.event.addDomListener(window, 'load', initMap);
+		</script>
+	</head>
+
+	<body>
+
+		<div class="map" id="mapDiv" style="width: 2000px; height: 2000px"></div>
+
+		<div id="searchContainer" class="overlay">
+			<div class="search" id="search">
+				<input autofocus class="awesomeplete" id="search-box" list="locationResults" data-bind="textInput: searchTerm, valueUpdate: 'afterkeydown'" style="width:200px" />
+			</div>
+
+			<div class="list" id="list">
+				<select size=5 class="results" id="results" data-bind="foreach: filteredList" style="width:200px">
+					<option class="place" id="place" data-bind="text: name, click: bounce" style="width:200px"></option>
+				</select>
+			</div>
+		</div>
+	</body>
+
+</html>
