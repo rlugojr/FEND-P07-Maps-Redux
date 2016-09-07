@@ -150,79 +150,61 @@ var initialLocations = [
 
 // Declaring global variables now to satisfy strict mode
 //var map;
-var ko;
-var clientID;
-var clientSecret;
+var $, ko, clientID, clientSecret;
 
-
-// formatPhone function referenced from
-// http://snipplr.com/view/65672/10-digit-string-to-phone-format/
-
-function formatPhone( phonenum ) {
-	var regexObj = /^(?:\+?1[-. ]?)?(?:\(?([0-9]{3})\)?[-. ]?)?([0-9]{3})[-. ]?([0-9]{4})$/;
-	if ( regexObj.test( phonenum ) ) {
-		var parts = phonenum.match( regexObj );
-		var phone = "";
-		if ( parts[ 1 ] ) {
-			phone += "+1 (" + parts[ 1 ] + ") ";
-		}
-		phone += parts[ 2 ] + "-" + parts[ 3 ];
-		return phone;
-	} else {
-		//invalid phone number
-		return phonenum;
-	}
-}
 
 var Location = function ( data ) {
 	var self = this;
-	this.name = data.name;
+	this.siteId = data.siteId;
+	this.siteName = data.siteName;
 	this.lat = data.lat;
-	this.long = data.long;
-	this.placeId = data.placeId,
-		this.wikiKey = data.wikiKey,
-		this.country = data.country,
-		this.URL = "";
-	this.street = "";
-	this.city = "";
-	this.phone = "";
+	this.long = data.lng;
+	this.placeId = data.placeId;
+	this.wikiKey = data.wikiKey;
+	this.country = data.country;
+	this.thumbSrc = "";
+	this.wikiExtract = "";
 
 	this.visible = ko.observable( true );
 
-	var foursquareURL = 'https://api.foursquare.com/v2/venues/search?ll=' + this.lat + ',' + this.long + '&client_id=' + clientID + '&client_secret=' + clientSecret + '&v=20160118' + '&query=' + this.name;
 
-	$.getJSON( foursquareURL ).done( function ( data ) {
-		var results = data.response.venues[ 0 ];
-		self.URL = results.url;
-		if ( typeof self.URL === 'undefined' ) {
-			self.URL = "";
-		}
-		self.street = results.location.formattedAddress[ 0 ];
-		self.city = results.location.formattedAddress[ 1 ];
-		self.phone = results.contact.phone;
-		if ( typeof self.phone === 'undefined' ) {
-			self.phone = "";
-		} else {
-			self.phone = formatPhone( self.phone );
-		}
-	} ).fail( function () {
-		console.log( "Foursquare API error." );
+	var wikiUrl = 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=320&titles=' + encodeURIComponent( data.wikiKey ) + '&format=json&callback=?';
+
+	var jqxhr = $.ajax( {
+			url: wikiUrl,
+			type: 'POST',
+			dataType: "jsonp"
+		} )
+		.done( function ( data ) {
+			//console.log( "success" );
+			this.wikiExtract = JSON.stringify( jsonPath( data, "$..extract" ) );
+			this.thumbSrc = JSON.stringify( jsonPath( data, "$..source" ) );
+		} ).fail( function ( jqXHR, textStatus ) {
+			//console.log( "error" );
+			console.log( 'Status: ' + textStatus );
+		} )
+		.always( function ( data ) {
+			console.log( "complete" );
+		} );
+
+	jqxhr.always( function ( jqXHR, textStatus ) {
+		console.log( 'Status: ' + textStatus );
 	} );
 
-	this.contentString = '<div class="info-window-content"><div class="title"><b>' + data.name + "</b></div>" +
-		'<div class="content"><a href="' + self.URL + '">' + self.URL + "</a></div>" +
-		'<div class="content">' + self.street + "</div>" +
-		'<div class="content">' + self.city + "</div>" +
-		'<div class="content">' + self.phone + "</div></div>";
+
+
+	this.info = '<div class="info-window-content"><div class="title"><b>' + data.siteName + "</b></div>" +
+		'<div class="infoContent"><img src="' + data.thumbSrc + '"/ ></div>' +
+		'<div class="infoContent">' + data.wikiExtract + "</div></div>";
 
 	this.infoWindow = new google.maps.InfoWindow( {
-		content: self.contentString
+		content: self.info
 	} );
 
 	this.marker = new google.maps.Marker( {
-		position: new google.maps.LatLng( data.lat, data.long ),
+		position: new google.maps.LatLng( data.lat, data.lng ),
 		map: map,
-		title: data.name
+		title: data.siteName
 	} );
 
 	this.showMarker = ko.computed( function () {
@@ -235,13 +217,8 @@ var Location = function ( data ) {
 	}, this );
 
 	this.marker.addListener( 'click', function () {
-		self.contentString = '<div class="info-window-content"><div class="title"><b>' + data.name + "</b></div>" +
-			'<div class="content"><a href="' + self.URL + '">' + self.URL + "</a></div>" +
-			'<div class="content">' + self.street + "</div>" +
-			'<div class="content">' + self.city + "</div>" +
-			'<div class="content"><a href="tel:' + self.phone + '">' + self.phone + "</a></div></div>";
 
-		self.infoWindow.setContent( self.contentString );
+		self.infoWindow.setContent( self.info );
 
 		self.infoWindow.open( map, this );
 
@@ -263,18 +240,6 @@ function ViewModel() {
 
 	this.locationList = ko.observableArray( [] );
 
-	/*map = new google.maps.Map( document.getElementById( 'map' ), {
-		zoom: 12,
-		center: {
-			lat: 37.370,
-			lng: -122.002
-		}
-	} );
-*/
-	// Foursquare API settings
-	clientID = "2KC3KHEMMIJHBSDIKF4VAA2HM0FM12J3DGO24YQRLGMUAZM4";
-	clientSecret = "NLIXGEDNVR40IESYVHKQROKOBBKLKUN40SQKWPQDUWSODDKY";
-
 	initialLocations.forEach( function ( locationItem ) {
 		self.locationList.push( new Location( locationItem ) );
 	} );
@@ -288,7 +253,7 @@ function ViewModel() {
 			return self.locationList();
 		} else {
 			return ko.utils.arrayFilter( self.locationList(), function ( locationItem ) {
-				var string = locationItem.name.toLowerCase();
+				var string = locationItem.siteName.toLowerCase();
 				var result = ( string.search( filter ) >= 0 );
 				locationItem.visible( result );
 				return result;
