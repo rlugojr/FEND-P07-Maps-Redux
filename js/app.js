@@ -151,14 +151,17 @@ var initialLocations = [
 var $, ko, clientID, clientSecret;
 
 
-$( function () {
-	$( '#search' ).focusin( function () {
-		$( '#list' ).show();
-	} );
-	$( '#search' ).focusout( function () {
-		$( '#list' ).hide();
-	} );
+$( document ).on( "click", function ( e ) {
+	if ( $( e.target ).is( "#search-box" ) || $( e.target ).is( "#results" ) ) {
+		$( "#results" ).show();
+	} else {
+		$( "#results" ).hide();
+	}
 } );
+
+
+
+
 
 
 var Location = function ( data ) {
@@ -170,14 +173,15 @@ var Location = function ( data ) {
 	this.siteId = data.siteId;
 	this.siteName = data.siteName;
 	this.lat = data.lat;
-	this.long = data.lng;
+	this.lng = data.lng;
+	this.latLng = this.lat + ', ' + this.lng;
 	this.placeId = data.placeId;
 	this.wikiKey = data.wikiKey;
 	this.country = data.country;
 
 
-	this.wikiThumb = ko.observable( "" );
-	this.wikiExtract = ko.observable( "" );
+	this.wikiThumb = "";
+	this.wikiExtract = "";
 
 	this.visible = ko.observable( true );
 
@@ -207,7 +211,7 @@ var Location = function ( data ) {
 
 
 	this.info = '<div class="info-window-content"><div class="title"><b>' + data.siteName + "</b></div>" +
-		'<div class="infoContent"><img src="' + this.wikiThumb + '"/ ></div>';
+		'<div class="infoContent"><p>' + this.latLng + '</p></div>';
 
 	this.infoWindow = new google.maps.InfoWindow( {
 		content: self.info
