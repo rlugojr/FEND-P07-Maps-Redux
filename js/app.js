@@ -280,7 +280,7 @@ var Location = function ( data ) {
 
 	this.marker.addListener( 'dblclick', function () {
 		self.map = self.marker.getMap();
-		alert( self.map.getZoom() );
+		//alert( self.map.getZoom() );
 		if ( self.map.getZoom() > 5 ) {
 			self.map.setCenter( 0, 0 );
 			self.map.setZoom( 3 );
@@ -289,7 +289,7 @@ var Location = function ( data ) {
 			self.map.setZoom( 17 );
 			//self.map.panTo( self.marker.getPosition() );
 		}
-	} )
+	} );
 
 };
 

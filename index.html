@@ -11,7 +11,7 @@
 		<link rel="stylesheet" href="css/awesomplete.css" />
 		<link rel="stylesheet" href="css/style.css" />
 
-		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4Sx-EmG0FVrUBwkOuk9Btwv2cW3jjuZg&libraries=places"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4Sx-EmG0FVrUBwkOuk9Btwv2cW3jjuZg&libraries=places, geometry"></script>
 		<style type="text/css">
 			#map {
 				width: 100%;
@@ -152,7 +152,7 @@
 			</div>
 
 			<div class="list" id="list">
-				<select size=5 class="results" id="results" data-bind="foreach: filteredList" style="width:200px">
+				<select size=10 class="results" id="results" data-bind="foreach: filteredList" style="width:200px">
 					<option class="place" id="place" data-bind="text: siteName, click: bounce" style="width:200px"></option>
 				</select>
 			</div>
