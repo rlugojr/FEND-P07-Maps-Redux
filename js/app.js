@@ -1,5 +1,3 @@
-'use strict';
-
 var initialLocations = [
 	{
 		siteId: 1100,
@@ -153,8 +151,22 @@ var initialLocations = [
 var $, ko, clientID, clientSecret;
 
 
+$( function () {
+	$( '#search' ).focusin( function () {
+		$( '#list' ).show();
+	} );
+	$( '#search' ).focusout( function () {
+		$( '#list' ).hide();
+	} );
+} );
+
+
 var Location = function ( data ) {
 	var self = this;
+
+	var wikiVals = [];
+
+
 	this.siteId = data.siteId;
 	this.siteName = data.siteName;
 	this.lat = data.lat;
@@ -162,40 +174,40 @@ var Location = function ( data ) {
 	this.placeId = data.placeId;
 	this.wikiKey = data.wikiKey;
 	this.country = data.country;
-	this.thumbSrc = "";
-	this.wikiExtract = "";
+
+
+	this.wikiThumb = ko.observable( "" );
+	this.wikiExtract = ko.observable( "" );
 
 	this.visible = ko.observable( true );
+
 
 
 	var wikiUrl = 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=320&titles=' + encodeURIComponent( data.wikiKey ) + '&format=json&callback=?';
 
 	var jqxhr = $.ajax( {
 			url: wikiUrl,
-			type: 'POST',
-			dataType: "jsonp"
+			context: this,
+			dataType: 'jsonp',
+		} ).always( function ( data ) {
+			var resp = data.query.pages;
+
+			var arrExtract = jsonPath( resp, "$..extract" );
+			self.wikiExtract = arrExtract[ 0 ];
+			console.log( self.wikiExtract );
+
+			var arrThumb = jsonPath( resp, "$..thumbnail" );
+			self.wikiThumb = arrThumb[ 0 ].source;
+			console.log( self.wikiThumb );
 		} )
-		.done( function ( data ) {
-			//console.log( "success" );
-			this.wikiExtract = JSON.stringify( jsonPath( data, "$..extract" ) );
-			this.thumbSrc = JSON.stringify( jsonPath( data, "$..source" ) );
-		} ).fail( function ( jqXHR, textStatus ) {
-			//console.log( "error" );
+		.fail( function ( jqXHR, textStatus ) {
+			console.log( "error" );
 			console.log( 'Status: ' + textStatus );
-		} )
-		.always( function ( data ) {
-			console.log( "complete" );
 		} );
-
-	jqxhr.always( function ( jqXHR, textStatus ) {
-		console.log( 'Status: ' + textStatus );
-	} );
-
 
 
 	this.info = '<div class="info-window-content"><div class="title"><b>' + data.siteName + "</b></div>" +
-		'<div class="infoContent"><img src="' + data.thumbSrc + '"/ ></div>' +
-		'<div class="infoContent">' + data.wikiExtract + "</div></div>";
+		'<div class="infoContent"><img src="' + this.wikiThumb + '"/ ></div>';
 
 	this.infoWindow = new google.maps.InfoWindow( {
 		content: self.info
