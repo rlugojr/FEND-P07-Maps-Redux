@@ -1,4 +1,4 @@
-var initialLocations = [
+var myLocations = [
 	{
 		siteId: 1100,
 		siteName: "Cristo Redentor",
@@ -286,7 +286,7 @@ var Location = function ( data ) {
 			self.map.setZoom( 3 );
 		} else {
 			self.map.setCenter( self.marker.getPosition() );
-			self.map.setZoom( 20 );
+			self.map.setZoom( 17 );
 			//self.map.panTo( self.marker.getPosition() );
 		}
 	} )
@@ -300,7 +300,7 @@ function ViewModel() {
 
 	this.locationList = ko.observableArray( [] );
 
-	initialLocations.forEach( function ( locationItem ) {
+	myLocations.forEach( function ( locationItem ) {
 		self.locationList.push( new Location( locationItem ) );
 	} );
 
