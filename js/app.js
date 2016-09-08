@@ -161,9 +161,6 @@ $( document ).on( "click", function ( e ) {
 
 
 
-
-
-
 var Location = function ( data ) {
 	var self = this;
 
@@ -209,6 +206,21 @@ var Location = function ( data ) {
 			console.log( 'Status: ' + textStatus );
 		} );
 
+	function makeMarkerIcon( markerColor ) {
+		var markerImage = new google.maps.MarkerImage(
+			'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
+			'|40|_|%E2%80%A2',
+			new google.maps.Size( 21, 34 ),
+			new google.maps.Point( 0, 0 ),
+			new google.maps.Point( 10, 34 ),
+			new google.maps.Size( 21, 34 ) );
+		return markerImage;
+	}
+
+	var defaultIcon = makeMarkerIcon( 'FE7569' );
+
+	var highlightedIcon = makeMarkerIcon( 'ffff24' );
+
 
 	this.info = '<div class="info-window-content"><div class="title"><b>' + data.siteName + "</b></div>" +
 		'<div class="infoContent"><p>' + this.latLng + '</p></div>';
@@ -220,7 +232,9 @@ var Location = function ( data ) {
 	this.marker = new google.maps.Marker( {
 		position: new google.maps.LatLng( data.lat, data.lng ),
 		map: map,
-		title: data.siteName
+		title: data.siteName,
+		icon: defaultIcon,
+		animation: google.maps.Animation.DROP,
 	} );
 
 	this.showMarker = ko.computed( function () {
@@ -231,6 +245,18 @@ var Location = function ( data ) {
 		}
 		return true;
 	}, this );
+
+	this.marker.addListener( 'mouseover', function () {
+		this.setIcon( highlightedIcon );
+	} );
+
+	this.marker.addListener( 'mouseout', function () {
+		this.setIcon( defaultIcon );
+	} );
+
+	this.bounce = function ( place ) {
+		google.maps.event.trigger( self.marker, 'click' );
+	};
 
 	this.marker.addListener( 'click', function () {
 
@@ -244,9 +270,27 @@ var Location = function ( data ) {
 		}, 2100 );
 	} );
 
-	this.bounce = function ( place ) {
-		google.maps.event.trigger( self.marker, 'click' );
-	};
+	// map.addListener( 'center_changed', function () {
+	// 	// 3 seconds after the center of the map has changed, pan back to the
+	// 	// marker.
+	// 	window.setTimeout( function () {
+	// 		map.panTo( marker.getPosition() );
+	// 	}, 3000 );
+	// } );
+
+	this.marker.addListener( 'dblclick', function () {
+		self.map = self.marker.getMap();
+		alert( self.map.getZoom() );
+		if ( self.map.getZoom() > 5 ) {
+			self.map.setCenter( 0, 0 );
+			self.map.setZoom( 3 );
+		} else {
+			self.map.setCenter( self.marker.getPosition() );
+			self.map.setZoom( 20 );
+			//self.map.panTo( self.marker.getPosition() );
+		}
+	} )
+
 };
 
 function ViewModel() {

@@ -11,7 +11,7 @@
 		<link rel="stylesheet" href="css/awesomplete.css" />
 		<link rel="stylesheet" href="css/style.css" />
 
-		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4Sx-EmG0FVrUBwkOuk9Btwv2cW3jjuZg"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4Sx-EmG0FVrUBwkOuk9Btwv2cW3jjuZg&libraries=places"></script>
 		<style type="text/css">
 			#map {
 				width: 100%;
@@ -24,107 +24,112 @@
 			function initMap() {
 				google.maps.visualRefresh = true;
 
-				var styles = [{
-					featureType: "road.highway",
-					elementType: "labels",
-					stylers: [{
-						visibility: "on"
-					}]
-				}, {
-					featureType: "road.arterial",
-					elementType: "labels.text",
-					stylers: [{
-						visibility: "on"
-					}]
-				}, {
-					featureType: "road.local",
-					elementType: "labels.text",
-					stylers: [{
-						visibility: "on"
-					}]
-				}, {
-					featureType: "water",
-					elementType: "geometry.fill",
-					stylers: [{
-						color: "#0099dd"
-					}]
-				}, {
-					featureType: "poi.park",
-					elementType: "geometry.fill",
-					stylers: [{
-						color: "#aadd55"
-					}]
-				}, {
-					featureType: 'administrative',
-					elementType: 'labels.text.stroke',
-					stylers: [{
-						color: '#ffffff'
+				var styledMapType = new google.maps.StyledMapType(
+					[{
+						featureType: "road.highway",
+						elementType: "labels",
+						stylers: [{
+							visibility: "on"
+						}]
 					}, {
-						weight: 6
-					}]
-				}, {
-					featureType: 'administrative',
-					elementType: 'labels.text.fill',
-					stylers: [{
-						color: '#e85113'
-					}]
-				}, {
-					featureType: 'road.highway',
-					elementType: 'geometry.stroke',
-					stylers: [{
-						color: '#efe9e4'
+						featureType: "road.arterial",
+						elementType: "labels.text",
+						stylers: [{
+							visibility: "on"
+						}]
 					}, {
-						lightness: -40
-					}]
-				}, {
-					featureType: 'transit.station',
-					stylers: [{
-						weight: 9
+						featureType: "road.local",
+						elementType: "labels.text",
+						stylers: [{
+							visibility: "on"
+						}]
 					}, {
-						hue: '#e85113'
-					}]
-				}, {
-					featureType: 'road.highway',
-					elementType: 'labels.icon',
-					stylers: [{
-						visibility: 'off'
-					}]
-				}, {
-					featureType: 'water',
-					elementType: 'labels.text.stroke',
-					stylers: [{
-						lightness: 100
-					}]
-				}, {
-					featureType: 'water',
-					elementType: 'labels.text.fill',
-					stylers: [{
-						lightness: -100
-					}]
-				}, {
-					featureType: 'poi',
-					elementType: 'geometry',
-					stylers: [{
-						visibility: 'on'
+						featureType: "water",
+						elementType: "geometry.fill",
+						stylers: [{
+							color: "#0099dd"
+						}]
 					}, {
-						color: '#f0e4d3'
-					}]
-				}, {
-					featureType: 'road.highway',
-					elementType: 'geometry.fill',
-					stylers: [{
-						color: '#efe9e4'
+						featureType: "poi.park",
+						elementType: "geometry.fill",
+						stylers: [{
+							color: "#aadd55"
+						}]
 					}, {
-						lightness: -25
-					}]
-				}];
+						featureType: 'administrative',
+						elementType: 'labels.text.stroke',
+						stylers: [{
+							color: '#ffffff'
+						}, {
+							weight: 6
+						}]
+					}, {
+						featureType: 'administrative',
+						elementType: 'labels.text.fill',
+						stylers: [{
+							color: '#e85113'
+						}]
+					}, {
+						featureType: 'road.highway',
+						elementType: 'geometry.stroke',
+						stylers: [{
+							color: '#efe9e4'
+						}, {
+							lightness: -40
+						}]
+					}, {
+						featureType: 'transit.station',
+						stylers: [{
+							weight: 9
+						}, {
+							hue: '#e85113'
+						}]
+					}, {
+						featureType: 'road.highway',
+						elementType: 'labels.icon',
+						stylers: [{
+							visibility: 'off'
+						}]
+					}, {
+						featureType: 'water',
+						elementType: 'labels.text.stroke',
+						stylers: [{
+							lightness: 100
+						}]
+					}, {
+						featureType: 'water',
+						elementType: 'labels.text.fill',
+						stylers: [{
+							lightness: -100
+						}]
+					}, {
+						featureType: 'poi',
+						elementType: 'geometry',
+						stylers: [{
+							visibility: 'on'
+						}, {
+							color: '#f0e4d3'
+						}]
+					}, {
+						featureType: 'road.highway',
+						elementType: 'geometry.fill',
+						stylers: [{
+							color: '#efe9e4'
+						}, {
+							lightness: -25
+						}]
+					}], {
+						name: "NeonWater"
+					});
 
 				var mapOptions = {
 					center: new google.maps.LatLng(0, 0),
 					zoom: 3,
-					styles: styles,
-					mapTypeControl: false,
-					mapTypeID: google.maps.MapTypeId.ROADMAP
+					mapTypeControlOptions: {
+						mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain',
+							'NeonWater'
+						]
+					}
 				};
 
 				var mapElement = document.getElementById('mapDiv');
@@ -139,7 +144,7 @@
 
 	<body>
 
-		<div class="map" id="mapDiv" style="width: 2000px; height: 2000px"></div>
+		<div class="map" id="mapDiv"></div>
 
 		<div id="searchContainer" class="overlay">
 			<div class="search" id="search">
