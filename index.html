@@ -133,9 +133,16 @@
 				};
 
 				var mapElement = document.getElementById('mapDiv');
+
+				var bounds = new google.maps.LatLngBounds();
+
 				map = new google.maps.Map(mapElement, mapOptions);
 
+				placesService = new google.maps.places.PlacesService(map);
+
 				ko.applyBindings(new ViewModel());
+
+				map.fitBounds(bounds);
 			}
 
 			google.maps.event.addDomListener(window, 'load', initMap);
@@ -153,7 +160,7 @@
 
 			<div class="list" id="list">
 				<select size=10 class="results" id="results" data-bind="foreach: filteredList" style="width:200px">
-					<option class="place" id="place" data-bind="text: siteName, click: bounce" style="width:200px"></option>
+					<option class="placeItem" id="placeItem" data-bind="text: siteName, click: bounce" style="width:200px"></option>
 				</select>
 			</div>
 		</div>
