@@ -125,24 +125,28 @@
 				var mapOptions = {
 					center: new google.maps.LatLng(0, 0),
 					zoom: 3,
+					mapType: 'NeonWater',
 					mapTypeControlOptions: {
 						mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain',
-							'NeonWater'
+							'styled_map'
 						]
 					}
 				};
 
 				var mapElement = document.getElementById('mapDiv');
 
-				var bounds = new google.maps.LatLngBounds();
+				var bounds = new google.maps.LatLngBounds(0, 0);
 
 				map = new google.maps.Map(mapElement, mapOptions);
+
+				map.mapTypes.set('styled_map', styledMapType);
+				map.setMapTypeId('styled_map');
 
 				placesService = new google.maps.places.PlacesService(map);
 
 				ko.applyBindings(new ViewModel());
 
-				map.fitBounds(bounds);
+				//map.fitBounds(bounds);
 			}
 
 			google.maps.event.addDomListener(window, 'load', initMap);

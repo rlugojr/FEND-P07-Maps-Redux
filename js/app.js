@@ -179,6 +179,8 @@ var Location = function ( data ) {
 	this.wikiThumb = "";
 	this.wikiExtract = "";
 
+	this.geoLoc = null;
+
 	this.visible = ko.observable( true );
 
 
@@ -224,7 +226,7 @@ var Location = function ( data ) {
 		placeId: data.placeId
 	};
 
-	placesService = new google.maps.places.PlacesService( map );
+	//placesService = new google.maps.places.PlacesService( map );
 
 	this.marker = new google.maps.Marker( {} );
 
@@ -235,6 +237,8 @@ var Location = function ( data ) {
 
 		if ( status == google.maps.places.PlacesServiceStatus.OK ) {
 			createPhotoMarker( place );
+		} else {
+			console.log( "error : " + status );
 		}
 	}
 
@@ -261,6 +265,28 @@ var Location = function ( data ) {
 				} ),
 				animation: google.maps.Animation.DROP,
 			} );
+			self.geoLoc = place.geometry.location;
+
+			self.marker.addListener( 'click', function () {
+				self.marker.setAnimation( google.maps.Animation.BOUNCE );
+				var timeoutID = setTimeout( function () {
+					self.marker.setAnimation( null );
+				}, 3000 );
+			} );
+
+			self.marker.addListener( 'dblclick', function () {
+				self.map = self.marker.getMap();
+				//alert( self.map.getZoom() );
+				if ( self.map.getZoom() > 5 ) {
+					self.map.setCenter( 0, 0 );
+					self.map.setZoom( 3 );
+					self.map.mapTypeID( 'NeonWater' );
+				} else {
+					self.map.setCenter( self.marker.getPosition() );
+					self.map.setZoom( 17 );
+					self.map.mapTypeID( 'satellite' );
+				}
+			} );
 		}
 	}
 
@@ -280,15 +306,15 @@ var Location = function ( data ) {
 	// 	animation: google.maps.Animation.DROP,
 	// } );
 
-	// this.showMarker = ko.computed( function () {
-	// 	if ( this.visible() === true ) {
-	// 		this.marker.setMap( map );
-	// 	} else {
-	// 		this.marker.setMap( null );
-	// 	}
-	// 	return true;
-	// }, this );
-	//
+	this.showMarker = ko.computed( function () {
+		if ( this.visible() === true ) {
+			this.marker.setMap( map );
+		} else {
+			this.marker.setMap( null );
+		}
+		return true;
+	}, this );
+
 	// this.marker.addListener( 'mouseover', function () {
 	// 	this.setIcon( highlightedIcon );
 	// } );
@@ -297,22 +323,25 @@ var Location = function ( data ) {
 	// 	this.setIcon( defaultIcon );
 	// } );
 
-	// this.bounce = function ( place ) {
-	// 	google.maps.event.trigger( self.marker, 'click' );
-	// };
-	//
-	// this.marker.addListener( 'click', function () {
+	this.bounce = function () {
+		google.maps.event.trigger( self.marker, 'click' );
+	};
+
+
+
+
+	//this.marker.addListener( 'click', function () {
 	//
 	// 	self.infoWindow.setContent( self.info );
 	//
 	// 	self.infoWindow.open( map, this );
 	//
-	// 	self.marker.setAnimation( google.maps.Animation.BOUNCE );
+	//	self.marker.setAnimation( google.maps.Animation.BOUNCE );
 	//
-	// 	setTimeout( function () {
-	// 		self.marker.setAnimation( null );
-	// 	}, 100 );
-	// } );
+	// var timeoutID = window.setTimeout( function () {
+	// 	self.marker.setAnimation( null );
+	// }, 2000 );
+	//} );
 
 	// map.addListener( 'center_changed', function () {
 	// 	// 3 seconds after the center of the map has changed, pan back to the
@@ -322,18 +351,7 @@ var Location = function ( data ) {
 	// 	}, 3000 );
 	// } );
 
-	// this.marker.addListener( 'dblclick', function () {
-	// 	self.map = self.marker.getMap();
-	// 	//alert( self.map.getZoom() );
-	// 	if ( self.map.getZoom() > 5 ) {
-	// 		self.map.setCenter( 0, 0 );
-	// 		self.map.setZoom( 3 );
-	// 	} else {
-	// 		self.map.setCenter( self.marker.getPosition() );
-	// 		self.map.setZoom( 17 );
-	// 		//self.map.panTo( self.marker.getPosition() );
-	// 	}
-	// } );
+
 
 };
 
@@ -344,9 +362,14 @@ function ViewModel() {
 
 	this.locationList = ko.observableArray( [] );
 
+	this.timeOutID = 0;
+
 	myLocations.forEach( function ( locationItem ) {
-		self.locationList.push( new Location( locationItem ) );
-	} );
+		self.timeOutID = setTimeout( function () {
+			self.locationList.push( new Location( locationItem ) );
+		}, 1000 );
+	}, self );
+
 
 	this.filteredList = ko.computed( function () {
 		var filter = self.searchTerm().toLowerCase();
@@ -365,7 +388,8 @@ function ViewModel() {
 		}
 	}, self );
 
-	this.filteredList().forEach( function ( locationItem ) {
-		bounds.extend( filteredList.marker.getPosition() );
-	} );
+
+	// this.filteredList().forEach( function ( locationItem ) {
+	// 	bounds.extend( filteredList.marker.getPosition() );
+	// } );
 }
