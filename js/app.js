@@ -148,7 +148,7 @@ var myLocations = [
 
 // Declaring global variables now to satisfy strict mode
 //var map;
-var $, ko, map, bounds, placesService, styledMapType;
+var $, ko, map, bounds, placesService, styledMapType, infowindow;
 
 
 $( document ).on( "click", function ( e ) {
@@ -219,7 +219,6 @@ var Location = function ( data ) {
 	placesService.getDetails( Request, callback );
 
 	function callback( place, status ) {
-		console.log( status );
 		var regularPic = null,
 			hoverPic = null,
 			clickPic = null;
@@ -227,8 +226,17 @@ var Location = function ( data ) {
 			hoverIcon = null,
 			clickIcon = null;
 
+
+
 		if ( status == google.maps.places.PlacesServiceStatus.OK ) {
 			var photos = place.photos;
+
+			var info = "<p><h4>" + place.name + "</h4></p>";
+			info = info + "<p><h6>" + place.formatted_address + "</h6></p>";
+			info = info + "<p><h6>" + place.formatted_phone_number + "</h6></p>";
+			info = info + "<p><h6>" + place.international_phone_number + "</h6></p>";
+			info = info + "<p><h6><a href='" + place.url + "'>Google Page</a></h6></p>";
+			info = info + "<p><h6><a href='" + place.website + "'>Official Website</a></h6></p>";
 
 			if ( photos ) {
 				img = photos[ 0 ].getUrl( {
@@ -353,7 +361,7 @@ var Location = function ( data ) {
 		self.marker.addListener( 'dblclick', function () {
 			map = self.marker.getMap();
 			self.marker.setAnimation( null );
-			//alert( self.map.getZoom() );
+
 			if ( map.getZoom() > 5 ) {
 				map.setCenter( 0, 0 );
 				map.setZoom( 3 );
@@ -374,57 +382,18 @@ var Location = function ( data ) {
 			}
 			return true;
 		} );
+
+
+		google.maps.event.addListener( self.marker, 'click', function () {
+			if ( !self.infowindow ) {
+				self.infowindow = new google.maps.InfoWindow();
+			}
+
+			self.infowindow.setContent( info );
+			self.infowindow.open( map, self.marker );
+		} );
 	}
 
-
-
-
-	// this.info = '<div class="info-window-content"><div class="title"><b>' + data.siteName + "</b></div>" +
-	// 	'<div class="infoContent"><p>' + this.latLng + '</p></div>';
-	//
-	// this.infoWindow = new google.maps.InfoWindow( {
-	// 	content: self.info
-	// } );
-
-
-	// this.showMarker = ko.computed( function () {
-	// 	if ( this.visible() === true ) {
-	// 		this.marker.setMap( map );
-	// 	} else {
-	// 		this.marker.setMap( null );
-	// 	}
-	// 	return true;
-	// }, this );
-
-
-
-	// this.bounce = function () {
-	// 	google.maps.event.trigger( self.marker, 'click' );
-	// };
-
-
-
-
-	//this.marker.addListener( 'click', function () {
-	//
-	// 	self.infoWindow.setContent( self.info );
-	//
-	// 	self.infoWindow.open( map, this );
-	//
-	//	self.marker.setAnimation( google.maps.Animation.BOUNCE );
-	//
-	// var timeoutID = window.setTimeout( function () {
-	// 	self.marker.setAnimation( null );
-	// }, 2000 );
-	//} );
-
-	// map.addListener( 'center_changed', function () {
-	// 	// 3 seconds after the center of the map has changed, pan back to the
-	// 	// marker.
-	// 	window.setTimeout( function () {
-	// 		map.panTo( marker.getPosition() );
-	// 	}, 3000 );
-	// } );
 };
 
 function ViewModel() {
@@ -433,6 +402,8 @@ function ViewModel() {
 	this.searchTerm = ko.observable( "" );
 
 	this.locationList = ko.observableArray( [] );
+
+	this.boundList = ko.observableArray( [] );
 
 	myLocations.forEach( function ( locationItem ) {
 		self.locationList.push( new Location( locationItem ) );
@@ -456,8 +427,14 @@ function ViewModel() {
 		}
 	}, self );
 
+	this.teleport = function ( locationItem ) {
+		self.filteredList( locationItem );
+		// this.bounce = function () {
+		// 	google.maps.event.trigger( self.marker, 'click' );
+		// };
 
-	// this.filteredList().forEach( function ( locationItem ) {
-	// 	bounds.extend( filteredList.marker.getPosition() );
-	// } );
+	};
+
+
+
 }
