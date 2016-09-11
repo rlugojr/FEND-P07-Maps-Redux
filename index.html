@@ -24,7 +24,7 @@
 			function initMap() {
 				google.maps.visualRefresh = true;
 
-				var styledMapType = new google.maps.StyledMapType(
+				styledMapType = new google.maps.StyledMapType(
 					[{
 						featureType: "road.highway",
 						elementType: "labels",
@@ -164,7 +164,7 @@
 
 			<div class="list" id="list">
 				<select size=10 class="results" id="results" data-bind="foreach: filteredList" style="width:200px">
-					<option class="placeItem" id="placeItem" data-bind="text: siteName, click: bounce" style="width:200px"></option>
+					<option class="placeItem" id="placeItem" data-bind="text: siteName" style="width:200px"></option>
 				</select>
 			</div>
 		</div>
