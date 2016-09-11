@@ -212,8 +212,6 @@ var Location = function ( data ) {
 		placeId: data.placeId
 	};
 
-	//placesService = new google.maps.places.PlacesService( map );
-
 	this.marker = new google.maps.Marker( {} );
 
 	placesService.getDetails( Request, callback );
@@ -233,7 +231,7 @@ var Location = function ( data ) {
 
 			if ( photos ) {
 				var infoPic = photos[ 0 ].getUrl( {
-					'maxWidth': 300,
+					'maxWidth': 250,
 					'maxHeight': 200
 				} );
 
@@ -242,22 +240,22 @@ var Location = function ( data ) {
 				info = info + '<img id="infoPic" src="' + infoPic + '"/>';
 				info = info + "</div>";
 				info = info + '<div id="content">';
-				if ( place.name !== "undefined" ) {
+				if ( typeof ( place.name ) !== "undefined" ) {
 					info = info + "<p><h3>" + place.name + "</h3></p>";
 				}
-				if ( place.formatted_address !== "undefined" ) {
+				if ( typeof ( place.formatted_address ) !== "undefined" ) {
 					info = info + "<p>" + place.formatted_address + "</p>";
 				}
-				if ( place.formatted_phone_number !== "undefined" ) {
+				if ( typeof ( place.formatted_phone_number ) !== "undefined" ) {
 					info = info + "<p>" + place.formatted_phone_number + "</p>";
 				}
-				if ( place.international_phone_number !== "undefined" ) {
+				if ( typeof ( place.international_phone_number ) !== "undefined" ) {
 					info = info + "<p>" + place.international_phone_number + "</p>";
 				}
-				if ( place.url !== "undefined" ) {
+				if ( typeof ( place.url ) !== "undefined" ) {
 					info = info + "<p><a href='" + place.url + "'>Google Page</a></p>";
 				}
-				if ( place.website !== "undefined" ) {
+				if ( typeof ( place.website ) !== "undefined" ) {
 					info = info + "<p><a href='" + place.website + "'>Official Website</a></p>";
 				}
 				info = info + "</div>";
@@ -429,6 +427,7 @@ var Location = function ( data ) {
 
 function ViewModel() {
 	var self = this;
+	var iter = 1;
 
 	this.searchTerm = ko.observable( "" );
 
@@ -437,7 +436,10 @@ function ViewModel() {
 	this.boundList = ko.observableArray( [] );
 
 	myLocations.forEach( function ( locationItem ) {
-		self.locationList.push( new Location( locationItem ) );
+		window.setTimeout( function () {
+			self.locationList.push( new Location( locationItem ) );
+		}, 225 * iter );
+		iter++;
 	}, self );
 
 
