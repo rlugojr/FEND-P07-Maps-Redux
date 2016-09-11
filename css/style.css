@@ -31,3 +31,14 @@ select {
     right: 60px;
     color: #ffffff;
 }
+
+#pic {
+    float: left;
+    width: 60%;
+}
+
+#content {
+    float: left;
+    width: 40%;
+    font-size: 10px
+}

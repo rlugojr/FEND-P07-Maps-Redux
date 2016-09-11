@@ -231,14 +231,38 @@ var Location = function ( data ) {
 		if ( status == google.maps.places.PlacesServiceStatus.OK ) {
 			var photos = place.photos;
 
-			var info = "<p><h4>" + place.name + "</h4></p>";
-			info = info + "<p><h6>" + place.formatted_address + "</h6></p>";
-			info = info + "<p><h6>" + place.formatted_phone_number + "</h6></p>";
-			info = info + "<p><h6>" + place.international_phone_number + "</h6></p>";
-			info = info + "<p><h6><a href='" + place.url + "'>Google Page</a></h6></p>";
-			info = info + "<p><h6><a href='" + place.website + "'>Official Website</a></h6></p>";
-
 			if ( photos ) {
+				var infoPic = photos[ 0 ].getUrl( {
+					'maxWidth': 300,
+					'maxHeight': 200
+				} );
+
+				var info = '<div class="container">';
+				info = info + '<div id="pic">';
+				info = info + '<img id="infoPic" src="' + infoPic + '"/>';
+				info = info + "</div>";
+				info = info + '<div id="content">';
+				if ( place.name !== "undefined" ) {
+					info = info + "<p><h3>" + place.name + "</h3></p>";
+				}
+				if ( place.formatted_address !== "undefined" ) {
+					info = info + "<p>" + place.formatted_address + "</p>";
+				}
+				if ( place.formatted_phone_number !== "undefined" ) {
+					info = info + "<p>" + place.formatted_phone_number + "</p>";
+				}
+				if ( place.international_phone_number !== "undefined" ) {
+					info = info + "<p>" + place.international_phone_number + "</p>";
+				}
+				if ( place.url !== "undefined" ) {
+					info = info + "<p><a href='" + place.url + "'>Google Page</a></p>";
+				}
+				if ( place.website !== "undefined" ) {
+					info = info + "<p><a href='" + place.website + "'>Official Website</a></p>";
+				}
+				info = info + "</div>";
+				info = info + "</div>";
+
 				img = photos[ 0 ].getUrl( {
 					'maxWidth': 75,
 					'maxHeight': 75
@@ -392,6 +416,13 @@ var Location = function ( data ) {
 			self.infowindow.setContent( info );
 			self.infowindow.open( map, self.marker );
 		} );
+
+		// google.map.event.addListener( self.infowindow, 'click', function () {
+		// 	$( document ).getElementById( "infoImg" ).src = photos[ 1 ].getUrl( {
+		// 		'maxWidth': 75,
+		// 		'maxHeight': 75
+		// 	} );
+		// } );
 	}
 
 };
