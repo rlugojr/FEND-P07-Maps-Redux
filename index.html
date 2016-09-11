@@ -135,7 +135,10 @@
 
 				var mapElement = document.getElementById('mapDiv');
 
-				var bounds = new google.maps.LatLngBounds(0, 0);
+				var bounds = new google.maps.LatLngBounds({
+					lat: 0,
+					lng: 0
+				});
 
 				map = new google.maps.Map(mapElement, mapOptions);
 

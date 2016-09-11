@@ -231,26 +231,21 @@ var Location = function ( data ) {
 			var photos = place.photos;
 
 			if ( photos ) {
+				img = photos[ 0 ].getUrl( {
+					'maxWidth': 75,
+					'maxHeight': 75
+				} );
 
 				regularPic = {
-					url: photos[ 0 ].getUrl( {
-						'maxWidth': 75,
-						'maxHeight': 75
-					} )
+					url: img,
 				};
 
 				hoverPic = {
-					url: photos[ 0 ].getUrl( {
-						'maxWidth': 75,
-						'maxHeight': 75
-					} )
+					url: img,
 				};
 
 				clickPic = {
-					url: photos[ 0 ].getUrl( {
-						'maxWidth': 75,
-						'maxHeight': 75
-					} )
+					url: img,
 				};
 
 				self.marker = new google.maps.Marker( {
@@ -268,23 +263,23 @@ var Location = function ( data ) {
 					size: new google.maps.Size( 21, 34 ),
 					origin: new google.maps.Point( 0, 0 ),
 					anchor: new google.maps.Point( 10, 34 ),
-					scaledSize: new google.maps.Size( 21, 34 ),
+					scaledSize: new google.maps.Size( 21, 34 )
 				};
 
 				hoverIcon = {
-					url: "http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2",
+					url: "http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FFFF24|40|_|%E2%80%A2",
 					size: new google.maps.Size( 21, 34 ),
-					origin: new google.maps.Point( 0, 33 ),
+					origin: new google.maps.Point( 0, 0 ),
 					anchor: new google.maps.Point( 10, 34 ),
-					scaledSize: new google.maps.Size( 21, 34 ),
+					scaledSize: new google.maps.Size( 21, 34 )
 				};
 
 				clickIcon = {
 					url: "http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2",
 					size: new google.maps.Size( 21, 34 ),
-					origin: new google.maps.Point( 0, 66 ),
+					origin: new google.maps.Point( 0, 0 ),
 					anchor: new google.maps.Point( 10, 34 ),
-					scaledSize: new google.maps.Size( 21, 34 ),
+					scaledSize: new google.maps.Size( 21, 34 )
 				};
 
 				self.marker = new google.maps.Marker( {
@@ -302,23 +297,23 @@ var Location = function ( data ) {
 				size: new google.maps.Size( 21, 34 ),
 				origin: new google.maps.Point( 0, 0 ),
 				anchor: new google.maps.Point( 10, 34 ),
-				scaledSize: new google.maps.Size( 21, 34 ),
+				scaledSize: new google.maps.Size( 21, 34 )
 			};
 
 			hoverIcon = {
-				url: "http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2",
+				url: "http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FFFF24|40|_|%E2%80%A2",
 				size: new google.maps.Size( 21, 34 ),
-				origin: new google.maps.Point( 0, 33 ),
+				origin: new google.maps.Point( 0, 0 ),
 				anchor: new google.maps.Point( 10, 34 ),
-				scaledSize: new google.maps.Size( 21, 34 ),
+				scaledSize: new google.maps.Size( 21, 34 )
 			};
 
 			clickIcon = {
 				url: "http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2",
 				size: new google.maps.Size( 21, 34 ),
-				origin: new google.maps.Point( 0, 66 ),
+				origin: new google.maps.Point( 0, 0 ),
 				anchor: new google.maps.Point( 10, 34 ),
-				scaledSize: new google.maps.Size( 21, 34 ),
+				scaledSize: new google.maps.Size( 21, 34 )
 			};
 
 			self.marker = new google.maps.Marker( {
