@@ -148,8 +148,8 @@ var myLocations = [
 
 // Declaring global variables now to satisfy strict mode
 //var map;
-var $, ko, map, bounds, placesService, styledMapType, infowindow;
-
+var $, ko, map, bounds, placesService, styledMapType, mapTypeIds, infowindow;
+var currentInfoWindows = [];
 
 $( document ).on( "click", function ( e ) {
 	if ( $( e.target ).is( "#search-box" ) || $( e.target ).is( "#results" ) ) {
@@ -160,11 +160,9 @@ $( document ).on( "click", function ( e ) {
 } );
 
 
-
 var Location = function ( data ) {
 	var self = this;
 	var wikiVals = [];
-
 
 	this.siteId = data.siteId;
 	this.siteName = data.siteName;
@@ -175,38 +173,7 @@ var Location = function ( data ) {
 	this.wikiKey = data.wikiKey;
 	this.country = data.country;
 
-
-	this.wikiThumb = "";
-	this.wikiExtract = "";
-
-	this.geoLoc = null;
-
 	this.visible = ko.observable( true );
-
-
-
-	var wikiUrl = 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=320&titles=' + encodeURIComponent( data.wikiKey ) + '&format=json&callback=?';
-
-	var jqxhr = $.ajax( {
-			url: wikiUrl,
-			context: this,
-			dataType: 'jsonp',
-		} ).always( function ( data ) {
-			var resp = data.query.pages;
-
-			var arrExtract = jsonPath( resp, "$..extract" );
-			self.wikiExtract = arrExtract[ 0 ];
-			//console.log( self.wikiExtract );
-
-			var arrThumb = jsonPath( resp, "$..thumbnail" );
-			self.wikiThumb = arrThumb[ 0 ].source;
-			//console.log( self.wikiThumb );
-		} )
-		.fail( function ( jqXHR, textStatus ) {
-			console.log( "error" );
-			console.log( 'Status: ' + textStatus );
-		} );
-
 
 	var Request = {
 		placeId: data.placeId
@@ -223,8 +190,6 @@ var Location = function ( data ) {
 		var regularIcon = null,
 			hoverIcon = null,
 			clickIcon = null;
-
-
 
 		if ( status == google.maps.places.PlacesServiceStatus.OK ) {
 			var photos = place.photos;
@@ -363,9 +328,6 @@ var Location = function ( data ) {
 			console.log( "error : " + status );
 		}
 
-
-		//self.geoLoc = place.geometry.location;
-
 		self.marker.addListener( 'mouseover', function () {
 			self.marker.setIcon( hoverPic || hoverIcon );
 		} );
@@ -408,23 +370,63 @@ var Location = function ( data ) {
 			return true;
 		} );
 
+		var wikiQuery = function ( searchKey ) {
+			var wikiUrl = 'https://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=10&piprop=thumbnail&pithumbsize=100&titles=' + encodeURIComponent( searchKey ) + '&format=json&callback=?';
+
+			var jqxhr = $.ajax( {
+					url: wikiUrl,
+					context: this,
+					dataType: 'jsonp',
+				} ).done( function ( data ) {
+					var resp = data.query.pages;
+
+					var arrExtract = jsonPath( resp, "$..extract" );
+
+					$( "#wikiText" ).html( arrExtract[ 0 ] );
+					//console.log( self.wikiExtract );
+
+					// var arrThumb = jsonPath( resp, "$..thumbnail" );
+					// self.wikiThumb = arrThumb[ 0 ].source;
+					// //console.log( self.wikiThumb );
+				} )
+				.fail( function ( jqXHR, textStatus ) {
+					console.log( "error" );
+					console.log( 'Status: ' + textStatus );
+				} );
+		};
+
+		var closeInfoWindows = function () {
+			if ( currentInfoWindows.length > 0 ) {
+				currentInfoWindows.forEach( function ( currInfoWindow ) {
+					currInfoWindow.close();
+				} );
+			}
+		};
 
 		google.maps.event.addListener( self.marker, 'click', function () {
-			if ( !self.infowindow ) {
-				self.infowindow = new google.maps.InfoWindow();
-			}
+			closeInfoWindows();
+
+			wikiQuery( self.wikiKey );
+
+			map.setCenter( {
+				lat: self.lat,
+				lng: self.lng
+			} );
+
+			self.infowindow = new google.maps.InfoWindow();
 
 			self.infowindow.setContent( info );
 			self.infowindow.open( map, self.marker );
+
+			currentInfoWindows.push( self.infowindow );
 		} );
 
-		// google.map.event.addListener( self.infowindow, 'click', function () {
-		// 	$( document ).getElementById( "infoImg" ).src = photos[ 1 ].getUrl( {
-		// 		'maxWidth': 75,
-		// 		'maxHeight': 75
-		// 	} );
-		// } );
 	}
+
+
+	this.findSite = function ( clickedLocation ) {
+		google.maps.event.trigger( self.marker, 'click' );
+	};
 
 };
 
@@ -462,15 +464,5 @@ function ViewModel() {
 			} );
 		}
 	}, self );
-
-	this.teleport = function ( locationItem ) {
-		self.filteredList( locationItem );
-		// this.bounce = function () {
-		// 	google.maps.event.trigger( self.marker, 'click' );
-		// };
-
-	};
-
-
 
 }
