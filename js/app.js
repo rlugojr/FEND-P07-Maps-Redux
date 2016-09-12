@@ -67,7 +67,7 @@ var myLocations = [
 		siteName: "Chartres Cathedral",
 		lat: 48.4478026,
 		lng: 1.4869519,
-		placeId: "ChIJKzGHdEgM5EcR_OBTT3nQoEA",
+		placeId: "ChIJlYA6J0QM5EcRISiIn2K1IBs",
 		wikiKey: "Chartres_Cathedral",
 		country: "France"
     },
@@ -94,7 +94,7 @@ var myLocations = [
 		siteName: "Delphi",
 		lat: 38.4823868,
 		lng: 22.4987759,
-		placeId: "ChIJn52jvWh5XxMRVRqVI3SRm2Y",
+		placeId: "ChIJ8bYp9l15XxMRVJB-uaPfO8o",
 		wikiKey: "Delphi",
 		country: "Greece"
     },
@@ -103,7 +103,7 @@ var myLocations = [
 		siteName: "Acropolis, Athens",
 		lat: 37.9715323,
 		lng: 23.7235552,
-		placeId: "ChIJhaTPiGV5XxMRW7GMCp-Rul8",
+		placeId: "ChIJ86z1Nxi9oRQR9g3r9ULAl1w",
 		wikiKey: "Acropolis_of_Athens",
 		country: "Greece"
     },
@@ -236,10 +236,12 @@ var Location = function ( data ) {
 				} );
 
 				var info = '<div class="container">';
-				info = info + '<div id="pic">';
-				info = info + '<img id="infoPic" src="' + infoPic + '"/>';
-				info = info + "</div>";
-				info = info + '<div id="content">';
+				if ( typeof ( infoPic ) !== "undefined" ) {
+					info = info + '<div id="pic">';
+					info = info + '<img id="infoPic" src="' + infoPic + '"/>';
+					info = info + "</div>";
+					info = info + '<div id="content">';
+				}
 				if ( typeof ( place.name ) !== "undefined" ) {
 					info = info + "<p><h3>" + place.name + "</h3></p>";
 				}
@@ -260,6 +262,7 @@ var Location = function ( data ) {
 				}
 				info = info + "</div>";
 				info = info + "</div>";
+
 
 				img = photos[ 0 ].getUrl( {
 					'maxWidth': 75,
