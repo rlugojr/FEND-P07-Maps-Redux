@@ -161,6 +161,7 @@ $( document ).on( "click", function ( e ) {
 } );
 
 
+
 var Location = function ( data ) {
 	var self = this;
 	var wikiVals = [];
@@ -357,11 +358,15 @@ var Location = function ( data ) {
 			} else {
 
 				hideDetailsPanel( false );
-
+				closeInfoWindows();
 				map.setCenter( self.marker.getPosition() );
 				map.setZoom( 17 );
 				//map.setMapTypeId( 'satellite' );
 			}
+		} );
+
+		$( "#wikiPic" ).click( function () {
+			hideDetailsPanel( true )
 		} );
 
 		self.marker.addListener( 'click', function () {
