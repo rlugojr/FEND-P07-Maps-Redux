@@ -152,14 +152,6 @@ var $, ko, map, bounds, placesService, styledMapType, mapTypeIds, infowindow;
 var currentInfoWindows = [];
 
 
-//Added hammerjs for mobile touch event support
-var hammertime = new Hammer( myElement, myOptions );
-hammertime.on( 'pan', function ( ev ) {
-	console.log( ev );
-} );
-
-
-
 $( document ).on( "click", function ( e ) {
 	if ( $( e.target ).is( "#search-box" ) || $( e.target ).is( "#results" ) ) {
 		$( "#results" ).show();
@@ -217,22 +209,28 @@ var Location = function ( data ) {
 					info = info + '<div id="content">';
 				}
 				if ( typeof ( place.name ) !== "undefined" ) {
-					info = info + "<p><h3>" + place.name + "</h3></p>";
+					info = info + "<div><h3>" + place.name + "</h3></div>";
 				}
 				if ( typeof ( place.formatted_address ) !== "undefined" ) {
-					info = info + "<p>" + place.formatted_address + "</p>";
+					var address_parts = [];
+					address_parts = place.formatted_address.split( "," );
+					address_parts.forEach( function ( part ) {
+						info = info + "<div>" + part + "</div>";
+					} );
+
+					//info = info + "<div>" + place.formatted_address + "</div>";
 				}
 				if ( typeof ( place.formatted_phone_number ) !== "undefined" ) {
-					info = info + "<p>" + place.formatted_phone_number + "</p>";
+					info = info + "<div>" + place.formatted_phone_number + "</div>";
 				}
 				if ( typeof ( place.international_phone_number ) !== "undefined" ) {
-					info = info + "<p>" + place.international_phone_number + "</p>";
+					info = info + "<div>" + place.international_phone_number + "</div>";
 				}
 				if ( typeof ( place.url ) !== "undefined" ) {
-					info = info + "<p><a href='" + place.url + "'>Google Page</a></p>";
+					info = info + "<div><a href='" + place.url + "'>Google Page</a></div>";
 				}
 				if ( typeof ( place.website ) !== "undefined" ) {
-					info = info + "<p><a href='" + place.website + "'>Official Website</a></p>";
+					info = info + "<div><a href='" + place.website + "'>Official Website</a></div>";
 				}
 				info = info + "</div>";
 				info = info + "</div>";
