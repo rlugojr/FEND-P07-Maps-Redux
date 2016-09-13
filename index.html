@@ -149,11 +149,25 @@
 				map.mapTypes.set('styled_map', styledMapType);
 				map.setMapTypeId('styled_map');
 
+				//http://stackoverflow.com/questions/3121400/google-maps-v3-how-to-change-the-map-style-based-on-zoom-level
+				google.maps.event.addListener(map, 'zoom_changed', function() {
+					var zoomLevel = map.getZoom();
+					// === IF Zoom Level <= 8 use mapStyleZoomedIn
+					if (zoomLevel > 5)
+						map.setMapTypeId('satellite');
+					// === If Zoom Level > 8 use mapStyleZoomedOut
+					else
+						map.setMapTypeId('styled_map');
+				});
+
 				placesService = new google.maps.places.PlacesService(map);
 
 				ko.applyBindings(new ViewModel());
 
 			}
+
+
+
 
 			google.maps.event.addDomListener(window, 'load', initMap);
 		</script>

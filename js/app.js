@@ -160,9 +160,6 @@ $( document ).on( "click", function ( e ) {
 } );
 
 
-
-
-
 var Location = function ( data ) {
 	var self = this;
 	var wikiVals = [];
@@ -348,16 +345,15 @@ var Location = function ( data ) {
 				hideDetailsPanel( true );
 
 				map.setCenter( 0, 0 );
-				map.setZoom( 2 );
-				map.mapTypes.set( 'styled_map', styledMapType );
-				map.setMapTypeID( 'styled_map' );
+				map.setZoom( 3 );
+				//map.setMapTypeID( 'styled_map' );
 			} else {
 
 				hideDetailsPanel( false );
 
 				map.setCenter( self.marker.getPosition() );
-				map.setZoom( 18 );
-				map.setMapTypeId( 'satellite' );
+				map.setZoom( 17 );
+				//map.setMapTypeId( 'satellite' );
 			}
 		} );
 
@@ -366,12 +362,6 @@ var Location = function ( data ) {
 
 			hideDetailsPanel( true );
 			wikiQuery( self.wikiKey );
-
-			/*map.setCenter( {
-				lat: self.lat,
-				lng: self.lng
-			} );
-			*/
 
 			self.marker.setIcon( clickPic || clickIcon );
 			self.marker.setAnimation( google.maps.Animation.BOUNCE );
