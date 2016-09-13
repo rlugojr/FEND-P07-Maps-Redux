@@ -160,6 +160,9 @@ $( document ).on( "click", function ( e ) {
 } );
 
 
+
+
+
 var Location = function ( data ) {
 	var self = this;
 	var wikiVals = [];
@@ -336,29 +339,54 @@ var Location = function ( data ) {
 			self.marker.setIcon( regularPic || regularIcon );
 		} );
 
-		self.marker.addListener( 'click', function () {
-			self.marker.setIcon( clickPic || clickIcon );
-			self.marker.setAnimation( google.maps.Animation.BOUNCE );
-			var timeoutID = setTimeout( function () {
-				self.marker.setIcon( regularPic || regularIcon );
-				self.marker.setAnimation( null );
-			}, 3000 );
-		} );
-
 		self.marker.addListener( 'dblclick', function () {
 			map = self.marker.getMap();
 			self.marker.setAnimation( null );
 
 			if ( map.getZoom() > 5 ) {
+
+				hideDetailsPanel( true );
+
 				map.setCenter( 0, 0 );
-				map.setZoom( 3 );
+				map.setZoom( 2 );
 				map.mapTypes.set( 'styled_map', styledMapType );
 				map.setMapTypeID( 'styled_map' );
 			} else {
+
+				hideDetailsPanel( false );
+
 				map.setCenter( self.marker.getPosition() );
-				map.setZoom( 17 );
+				map.setZoom( 18 );
 				map.setMapTypeId( 'satellite' );
 			}
+		} );
+
+		self.marker.addListener( 'click', function () {
+			closeInfoWindows();
+
+			hideDetailsPanel( true );
+			wikiQuery( self.wikiKey );
+
+			/*map.setCenter( {
+				lat: self.lat,
+				lng: self.lng
+			} );
+			*/
+
+			self.marker.setIcon( clickPic || clickIcon );
+			self.marker.setAnimation( google.maps.Animation.BOUNCE );
+
+			var timeoutID = setTimeout( function () {
+				self.marker.setIcon( regularPic || regularIcon );
+				self.marker.setAnimation( null );
+			}, 3000 );
+
+			self.infowindow = new google.maps.InfoWindow();
+
+			self.infowindow.setContent( info );
+			self.infowindow.open( map, self.marker );
+
+			currentInfoWindows.push( self.infowindow );
 		} );
 
 		self.showMarker = ko.computed( function () {
@@ -371,7 +399,7 @@ var Location = function ( data ) {
 		} );
 
 		var wikiQuery = function ( searchKey ) {
-			var wikiUrl = 'https://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=10&piprop=thumbnail&pithumbsize=100&titles=' + encodeURIComponent( searchKey ) + '&format=json&callback=?';
+			var wikiUrl = 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( searchKey ) + '&format=json&callback=?';
 
 			var jqxhr = $.ajax( {
 					url: wikiUrl,
@@ -383,11 +411,9 @@ var Location = function ( data ) {
 					var arrExtract = jsonPath( resp, "$..extract" );
 
 					$( "#wikiText" ).html( arrExtract[ 0 ] );
-					//console.log( self.wikiExtract );
 
-					// var arrThumb = jsonPath( resp, "$..thumbnail" );
-					// self.wikiThumb = arrThumb[ 0 ].source;
-					// //console.log( self.wikiThumb );
+					var arrThumb = jsonPath( resp, "$..thumbnail" );
+					$( "#wikiPic" ).attr( "src", arrThumb[ 0 ].source );
 				} )
 				.fail( function ( jqXHR, textStatus ) {
 					console.log( "error" );
@@ -403,23 +429,13 @@ var Location = function ( data ) {
 			}
 		};
 
-		google.maps.event.addListener( self.marker, 'click', function () {
-			closeInfoWindows();
-
-			wikiQuery( self.wikiKey );
-
-			map.setCenter( {
-				lat: self.lat,
-				lng: self.lng
-			} );
-
-			self.infowindow = new google.maps.InfoWindow();
-
-			self.infowindow.setContent( info );
-			self.infowindow.open( map, self.marker );
-
-			currentInfoWindows.push( self.infowindow );
-		} );
+		var hideDetailsPanel = function ( bool ) {
+			if ( bool ) {
+				$( detailsPanel ).hide();
+			} else {
+				$( detailsPanel ).show();
+			}
+		};
 
 	}
 
