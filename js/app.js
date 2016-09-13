@@ -146,10 +146,19 @@ var myLocations = [
 
 ];
 
-// Declaring global variables now to satisfy strict mode
-//var map;
+
+//set globabl variables
 var $, ko, map, bounds, placesService, styledMapType, mapTypeIds, infowindow;
 var currentInfoWindows = [];
+
+
+//Added hammerjs for mobile touch event support
+var hammertime = new Hammer( myElement, myOptions );
+hammertime.on( 'pan', function ( ev ) {
+	console.log( ev );
+} );
+
+
 
 $( document ).on( "click", function ( e ) {
 	if ( $( e.target ).is( "#search-box" ) || $( e.target ).is( "#results" ) ) {

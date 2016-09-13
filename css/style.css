@@ -23,7 +23,7 @@ select {
 
 .overlay {
     position: absolute;
-    width: 200px;
+    width: 25%;
     height: auto;
     z-index: 10;
     background: rgba(0, 0, 0, 0.4);
