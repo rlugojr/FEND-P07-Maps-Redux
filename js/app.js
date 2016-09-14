@@ -211,9 +211,8 @@ var Location = function ( data ) {
 					'maxHeight': 200
 				} );
 
-				/*
+				/**
 				 * If the results have pictures, add one to the infoWindow.
-				 * If place can't be resolved then usedata model fields.
 				 */
 				var info = '<div class="container">';
 				if ( typeof ( infoPic ) !== 'undefined' ) {
@@ -276,7 +275,7 @@ var Location = function ( data ) {
 				} );
 
 			} else {
-
+				//If place found but no picture, then use default markers.
 				regularIcon = {
 					url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2',
 					size: new google.maps.Size( 21, 34 ),
@@ -311,6 +310,7 @@ var Location = function ( data ) {
 				} );
 			}
 		} else {
+			//If place can't be resolved then default to original data model fields.
 			regularIcon = {
 				url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2',
 				size: new google.maps.Size( 21, 34 ),
@@ -361,7 +361,6 @@ var Location = function ( data ) {
 			if ( map.getZoom() > 5 ) {
 
 				hideDetailsPanel( true );
-
 				map.setCenter( 0, 0 );
 				map.setZoom( 3 );
 				//map.setMapTypeID( 'styled_map' );
@@ -371,7 +370,6 @@ var Location = function ( data ) {
 				closeInfoWindows();
 				map.setCenter( self.marker.getPosition() );
 				map.setZoom( 17 );
-				//map.setMapTypeId( 'satellite' );
 			}
 		} );
 
@@ -439,7 +437,7 @@ var Location = function ( data ) {
 				} )
 				.fail( function ( jqXHR, textStatus ) {
 					console.log( 'error' );
-					console.log( 'Status: ' + textStatus );
+					$( '#wikiText' ).html( 'Wikipedia service error : ' + textStatus );
 				} );
 		};
 
