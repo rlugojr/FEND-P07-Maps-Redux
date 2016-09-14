@@ -6,7 +6,7 @@
 
 ### Purpose
 
-The purpose of this project is to learn how create an application using a Web API's to create an application that queries for and utilization the available information.
+The purpose of this project is to learn how to use Web API's, primarily Google Maps, to create an app that combines the data and provides more context through the visualization of the combined information, perhaps in an entirely different paradigm.
 _Note: This repository contains my version of the solution to complete Udacity's Front End Web Developer's Project #07._
 
 * * *
@@ -47,10 +47,10 @@ To run this project:
 1. Download or Fork this repository.
 2. Open "src/index.html" in a modern browser.
 3. Explore, learn, enjoy and explore some more.
-4. Add your own sites to the database or post your favorites on our github page to share with others.
+4. Add your favorite latLngs to the database or post your favorites on my github project page to share with others.
 ```
 
-Also, you can view a running instance of my [version](https://rlugojr.github.io/FEND-P07/), hosted on GitHub Pages.
+TODO: ~~Also, you can view a running instance of my [version](https://rlugojr.github.io/FEND-P07/), hosted on GitHub Pages.~~
 
 * * *
 
