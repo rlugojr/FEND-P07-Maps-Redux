@@ -1,3 +1,6 @@
+/**
+ *Dataset of Sites to Behold
+ */
 var myLocations = [
 	{
 		siteId: 1100,
@@ -151,21 +154,24 @@ var myLocations = [
 var $, ko, map, bounds, placesService, styledMapType, mapTypeIds, infowindow;
 var currentInfoWindows = [];
 
-
-$( document ).on( "click", function ( e ) {
-	if ( $( e.target ).is( "#search-box" ) || $( e.target ).is( "#results" ) ) {
-		$( "#results" ).show();
+//Clicking anywhere other than the filter box causes the list box to hide.
+$( document ).on( 'click', function ( e ) {
+	if ( $( e.target ).is( '#search-box' ) || $( e.target ).is( '#results' ) ) {
+		$( '#results' ).show();
 	} else {
-		$( "#results" ).hide();
+		$( '#results' ).hide();
 	}
 } );
 
-
-
+/**
+ *This function creates an object containing Google Map objects
+ *for each location in the location list.
+ */
 var Location = function ( data ) {
 	var self = this;
 	var wikiVals = [];
 
+	//Set data model
 	this.siteId = data.siteId;
 	this.siteName = data.siteName;
 	this.lat = data.lat;
@@ -177,12 +183,15 @@ var Location = function ( data ) {
 
 	this.visible = ko.observable( true );
 
+	//prepare a placeId object for submission to Places API
 	var Request = {
 		placeId: data.placeId
 	};
 
+	//instantiate placeholder for marker object
 	this.marker = new google.maps.Marker( {} );
 
+	//call place API using placeId
 	placesService.getDetails( Request, callback );
 
 	function callback( place, status ) {
@@ -202,41 +211,45 @@ var Location = function ( data ) {
 					'maxHeight': 200
 				} );
 
+				/*
+				 * If the results have pictures, add one to the infoWindow.
+				 * If place can't be resolved then usedata model fields.
+				 */
 				var info = '<div class="container">';
-				if ( typeof ( infoPic ) !== "undefined" ) {
+				if ( typeof ( infoPic ) !== 'undefined' ) {
 					info = info + '<div id="pic">';
 					info = info + '<img id="infoPic" src="' + infoPic + '"/>';
-					info = info + "</div>";
+					info = info + '</div>';
 					info = info + '<div id="content">';
 				}
-				if ( typeof ( place.name ) !== "undefined" ) {
-					info = info + "<div><h3>" + place.name + "</h3></div>";
+				if ( typeof ( place.name ) !== 'undefined' ) {
+					info = info + '<div><h3>' + place.name + '</h3></div>';
 				}
-				if ( typeof ( place.formatted_address ) !== "undefined" ) {
+				if ( typeof ( place.formatted_address ) !== 'undefined' ) {
 					var address_parts = [];
-					address_parts = place.formatted_address.split( "," );
+					address_parts = place.formatted_address.split( ',' );
 					address_parts.forEach( function ( part ) {
-						info = info + "<div>" + part + "</div>";
+						info = info + '<div>' + part + '</div>';
 					} );
+				}
+				if ( typeof ( place.formatted_phone_number ) !== 'undefined' ) {
+					info = info + '<div>' + place.formatted_phone_number + '</div>';
+				}
+				if ( typeof ( place.international_phone_number ) !== 'undefined' ) {
+					info = info + '<div>' + place.international_phone_number + '</div>';
+				}
+				if ( typeof ( place.url ) !== 'undefined' ) {
+					info = info + '<div><a href="' + place.url + '">Google Page</a></div>';
+				}
+				if ( typeof ( place.website ) !== 'undefined' ) {
+					info = info + '<div><a href="' + place.website + '">Official Website</a></div>';
+				}
+				info = info + '</div>';
+				info = info + '</div>';
 
-					//info = info + "<div>" + place.formatted_address + "</div>";
-				}
-				if ( typeof ( place.formatted_phone_number ) !== "undefined" ) {
-					info = info + "<div>" + place.formatted_phone_number + "</div>";
-				}
-				if ( typeof ( place.international_phone_number ) !== "undefined" ) {
-					info = info + "<div>" + place.international_phone_number + "</div>";
-				}
-				if ( typeof ( place.url ) !== "undefined" ) {
-					info = info + "<div><a href='" + place.url + "'>Google Page</a></div>";
-				}
-				if ( typeof ( place.website ) !== "undefined" ) {
-					info = info + "<div><a href='" + place.website + "'>Official Website</a></div>";
-				}
-				info = info + "</div>";
-				info = info + "</div>";
-
-
+				/*Create markers with images, if available.
+				 *  Otherwise use regular markers
+				 */
 				img = photos[ 0 ].getUrl( {
 					'maxWidth': 75,
 					'maxHeight': 75
@@ -265,7 +278,7 @@ var Location = function ( data ) {
 			} else {
 
 				regularIcon = {
-					url: "http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2",
+					url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2',
 					size: new google.maps.Size( 21, 34 ),
 					origin: new google.maps.Point( 0, 0 ),
 					anchor: new google.maps.Point( 10, 34 ),
@@ -273,7 +286,7 @@ var Location = function ( data ) {
 				};
 
 				hoverIcon = {
-					url: "http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FFFF24|40|_|%E2%80%A2",
+					url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FFFF24|40|_|%E2%80%A2',
 					size: new google.maps.Size( 21, 34 ),
 					origin: new google.maps.Point( 0, 0 ),
 					anchor: new google.maps.Point( 10, 34 ),
@@ -281,7 +294,7 @@ var Location = function ( data ) {
 				};
 
 				clickIcon = {
-					url: "http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2",
+					url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2',
 					size: new google.maps.Size( 21, 34 ),
 					origin: new google.maps.Point( 0, 0 ),
 					anchor: new google.maps.Point( 10, 34 ),
@@ -299,7 +312,7 @@ var Location = function ( data ) {
 			}
 		} else {
 			regularIcon = {
-				url: "http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2",
+				url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2',
 				size: new google.maps.Size( 21, 34 ),
 				origin: new google.maps.Point( 0, 0 ),
 				anchor: new google.maps.Point( 10, 34 ),
@@ -307,7 +320,7 @@ var Location = function ( data ) {
 			};
 
 			hoverIcon = {
-				url: "http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FFFF24|40|_|%E2%80%A2",
+				url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FFFF24|40|_|%E2%80%A2',
 				size: new google.maps.Size( 21, 34 ),
 				origin: new google.maps.Point( 0, 0 ),
 				anchor: new google.maps.Point( 10, 34 ),
@@ -315,7 +328,7 @@ var Location = function ( data ) {
 			};
 
 			clickIcon = {
-				url: "http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2",
+				url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2',
 				size: new google.maps.Size( 21, 34 ),
 				origin: new google.maps.Point( 0, 0 ),
 				anchor: new google.maps.Point( 10, 34 ),
@@ -333,17 +346,14 @@ var Location = function ( data ) {
 				animation: google.maps.Animation.DROP,
 			} );
 
-			console.log( "error : " + status );
+			console.log( 'error : ' + status );
 		}
 
-		self.marker.addListener( 'mouseover', function () {
-			self.marker.setIcon( hoverPic || hoverIcon );
-		} );
-
-		self.marker.addListener( 'mouseout', function () {
-			self.marker.setIcon( regularPic || regularIcon );
-		} );
-
+		/**
+		 *Double click on marker zooms in on site instantly.
+		 *WikiInfo Panel is displayed.
+		 *Double click on marker again to zoom out.
+		 */
 		self.marker.addListener( 'dblclick', function () {
 			map = self.marker.getMap();
 			self.marker.setAnimation( null );
@@ -365,10 +375,18 @@ var Location = function ( data ) {
 			}
 		} );
 
+		//Hides WikiPanel if image on WikiPanel is clicked.
 		$( "#wikiPic" ).click( function () {
-			hideDetailsPanel( true )
+			hideDetailsPanel( true );
 		} );
 
+		/**
+		 *Single click on a closes all existing infoWindows and displays
+		 *a new one for the selected marker.
+		 *Wiki query is submitted asynchronously to prepare the WikiPanel
+		 *for display.
+		 *TODO: add another UX component to allow the user to toggle the wikiPanel.
+		 */
 		self.marker.addListener( 'click', function () {
 			closeInfoWindows();
 
@@ -391,6 +409,7 @@ var Location = function ( data ) {
 			currentInfoWindows.push( self.infowindow );
 		} );
 
+		//Designated during list filtering.  Shows the marker on the map if "true"
 		self.showMarker = ko.computed( function () {
 			if ( self.visible() === true ) {
 				self.marker.setMap( map );
@@ -400,6 +419,7 @@ var Location = function ( data ) {
 			return true;
 		} );
 
+		//Asynchronous JSONP query to Wikipedia Web API.
 		var wikiQuery = function ( searchKey ) {
 			var wikiUrl = 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( searchKey ) + '&format=json&callback=?';
 
@@ -410,19 +430,20 @@ var Location = function ( data ) {
 				} ).done( function ( data ) {
 					var resp = data.query.pages;
 
-					var arrExtract = jsonPath( resp, "$..extract" );
+					var arrExtract = jsonPath( resp, '$..extract' );
 
-					$( "#wikiText" ).html( arrExtract[ 0 ] );
+					$( '#wikiText' ).html( arrExtract[ 0 ] );
 
-					var arrThumb = jsonPath( resp, "$..thumbnail" );
-					$( "#wikiPic" ).attr( "src", arrThumb[ 0 ].source );
+					var arrThumb = jsonPath( resp, '$..thumbnail' );
+					$( '#wikiPic' ).attr( 'src', arrThumb[ 0 ].source );
 				} )
 				.fail( function ( jqXHR, textStatus ) {
-					console.log( "error" );
+					console.log( 'error' );
 					console.log( 'Status: ' + textStatus );
 				} );
 		};
 
+		//Closes any open infoWindows
 		var closeInfoWindows = function () {
 			if ( currentInfoWindows.length > 0 ) {
 				currentInfoWindows.forEach( function ( currInfoWindow ) {
@@ -431,6 +452,7 @@ var Location = function ( data ) {
 			}
 		};
 
+		//Hides WikiPanel if "true", displays panel if "false"
 		var hideDetailsPanel = function ( bool ) {
 			if ( bool ) {
 				$( detailsPanel ).hide();
@@ -441,16 +463,23 @@ var Location = function ( data ) {
 
 	}
 
-
+	//Method called by list box selection that triggers the marker click event.
 	this.findSite = function ( clickedLocation ) {
 		google.maps.event.trigger( self.marker, 'click' );
 	};
 
 };
 
+
+//Main KO ViewModel
 function ViewModel() {
 	var self = this;
+
 	var iter = 1;
+	/*used as a multiplier to set intervals to calls
+	 *to Google Places API, which limits the number of
+	 *queries to 10 per second and then fails.
+	 */
 
 	this.searchTerm = ko.observable( "" );
 
@@ -458,6 +487,7 @@ function ViewModel() {
 
 	this.boundList = ko.observableArray( [] );
 
+	//for each JSON object, create locations KO objects and keep in array.
 	myLocations.forEach( function ( locationItem ) {
 		window.setTimeout( function () {
 			self.locationList.push( new Location( locationItem ) );
@@ -465,7 +495,10 @@ function ViewModel() {
 		iter++;
 	}, self );
 
-
+	/**
+	 *This section handles the filtering of list box items
+	 *and returns only the locations that match the filter.
+	 */
 	this.filteredList = ko.computed( function () {
 		var filter = self.searchTerm().toLowerCase();
 		if ( !filter ) {
