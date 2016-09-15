@@ -23,7 +23,7 @@
 			}
 		</script>
 
-		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4Sx-EmG0FVrUBwkOuk9Btwv2cW3jjuZg&libraries=places, geometry" onerror="googleError()" async defer></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4Sx-EmG0FVrUBwkOuk9Btwv2cW3jjuZg&libraries=places, geometry&callback=initMap" onerror="googleError()" async defer></script>
 	</head>
 
 	<style>
@@ -189,7 +189,7 @@
 	</script>
 
 
-	<body onload="initMap();">
+	<body>
 
 		<div class="map" id="mapDiv"></div>
 		<!--Input and Select boxes-->
