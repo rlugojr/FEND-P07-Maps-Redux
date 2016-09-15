@@ -14,10 +14,6 @@ select {
     width: 200px;
 }
 
-a {
-    color: white;
-}
-
 
 /* Google Maps Start */
 
@@ -54,7 +50,7 @@ a {
 #pic {
     float: left;
     display: block;
-    width: 125px;
+    width: 150px;
     max-width: 150px;
     margin: 0 auto;
 }
@@ -67,6 +63,10 @@ a {
     font-weight: bold;
     color: white;
     text-shadow: 0 0 8px black;
+}
+
+#content a {
+    color: white;
 }
 
 

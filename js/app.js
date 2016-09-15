@@ -419,7 +419,7 @@ var Location = function ( data ) {
 
 		//Asynchronous JSONP query to Wikipedia Web API.
 		var wikiQuery = function ( searchKey ) {
-			var wikiUrl = 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( searchKey ) + '&format=json&callback=?';
+			var wikiUrl = 'https://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( searchKey ) + '&format=json&callback=?';
 
 			var jqxhr = $.ajax( {
 					url: wikiUrl,
@@ -437,7 +437,7 @@ var Location = function ( data ) {
 				} )
 				.fail( function ( jqXHR, textStatus ) {
 					console.log( 'error' );
-					$( '#wikiText' ).html( 'Wikipedia service error : ' + textStatus );
+					$( '#wikiText' ).html( '<h1>Wikipedia service error : ' + textStatus + '</h1>' );
 				} );
 		};
 
