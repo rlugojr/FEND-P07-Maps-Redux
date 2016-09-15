@@ -15,6 +15,7 @@
 		<script>
 			function googleError() {
 				if (document.getElementById('myModal') !== undefined) {
+					var modal = document.getElementById('myModal');
 					modal.style.display = "block";
 				} else {
 					alert('Google Maps API Failed to load. Please check your Internet Connection and try again.');
