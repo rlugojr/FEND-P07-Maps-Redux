@@ -388,7 +388,6 @@ var Location = function ( data ) {
 		self.marker.addListener( 'click', function () {
 			closeInfoWindows();
 
-			hideDetailsPanel( true );
 			wikiQuery( self.wikiKey );
 
 			self.marker.setIcon( clickPic || clickIcon );
@@ -405,6 +404,8 @@ var Location = function ( data ) {
 			self.infowindow.open( map, self.marker );
 
 			currentInfoWindows.push( self.infowindow );
+
+			hideDetailsPanel( false );
 		} );
 
 		//Designated during list filtering.  Shows the marker on the map if "true"
@@ -419,7 +420,7 @@ var Location = function ( data ) {
 
 		//Asynchronous JSONP query to Wikipedia Web API.
 		var wikiQuery = function ( searchKey ) {
-			var wikiUrl = 'https://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( searchKey ) + '&format=json&callback=?';
+			var wikiUrl = 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( searchKey ) + '&format=json&callback=?';
 
 			var jqxhr = $.ajax( {
 					url: wikiUrl,

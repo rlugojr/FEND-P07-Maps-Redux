@@ -31,11 +31,11 @@ _Note: This repository contains my version of the solution to complete Udacity's
 
 FEND-P07 in Chrome Desktop
 
-[![FEND-P07 in Chrome Desktop)](https://www.youtube.com/embed/nkXgyoK4Ing/0.jpg)](http://www.youtube.com/watch?v=nkXgyoK4Ing)
+![FEND-P07 in Chrome Desktop](doc/Desktop.mp4.gif "FEND-P07 in Chrome Desktop")
 
 FEND-P07 on iPad and iPhone (Chrome Emulator)
 
-[![FEND-P07 on iPad and iPhone (Chrome Emulator)](https://www.youtube.com/embed/dhenFQaFRDY/0.jpg)](http://www.youtube.com/watch?v=dhenFQaFRDY)
+![FEND-P07 on iPad and iPhone (Chrome Emulator)](doc/iPhone.mp4.gif "FEND-P07 on iPad and iPhone (Chrome Emulator)")
 
 * * *
 
