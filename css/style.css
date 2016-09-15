@@ -119,7 +119,7 @@ select {
 
 /*modal window on Google Maps API error*/
 
-.modal {
+.modal-dialog {
     display: none;
     position: fixed;
     z-index: 20;

@@ -14,22 +14,25 @@
 
 		<script>
 			function googleError() {
-				var modal = document.getElementById('myModal');
-				modal.style.display = "block";
+				if (document.getElementById('myModal') !== undefined) {
+					modal.style.display = "block";
+				} else {
+					alert('Google Maps API Failed to load. Please check your Internet Connection and try again.');
+				}
 			}
 		</script>
 
 		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4Sx-EmG0FVrUBwkOuk9Btwv2cW3jjuZg&libraries=places, geometry" onerror="googleError()" async defer></script>
 	</head>
 
-	<style type="text/css">
+	<style>
 		#map {
 			width: 100%;
 			height: 100%
 		}
 	</style>
 
-	<script type="text/javascript">
+	<script>
 		var map;
 
 		function initMap() {
@@ -211,7 +214,7 @@
 		</div>
 
 		<!-- The Google API ErrorModal -->
-		<div id="myModal" class="modal">
+		<div id="myModal" class="modal-dialog">
 			<div class="modal-content">
 				<h1>Google Maps API Failed to load.</h1>
 				<h3>Please check your Internet Connection and try again.</h3>
