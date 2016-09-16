@@ -172,16 +172,16 @@ var Location = function ( data ) {
 	var wikiVals = [];
 
 	//Set data model
-	this.siteId = data.siteId;
-	this.siteName = data.siteName;
-	this.lat = data.lat;
-	this.lng = data.lng;
-	this.latLng = ( data.lat + ", " + data.lng );
-	this.placeId = data.placeId;
-	this.wikiKey = data.wikiKey;
-	this.country = data.country;
+	self.siteId = data.siteId;
+	self.siteName = data.siteName;
+	self.lat = data.lat;
+	self.lng = data.lng;
+	self.latLng = ( data.lat + ", " + data.lng );
+	self.placeId = data.placeId;
+	self.wikiKey = data.wikiKey;
+	self.country = data.country;
 
-	this.visible = ko.observable( true );
+	self.visible = ko.observable( true );
 
 	//prepare a placeId object for submission to Places API
 	var Request = {
@@ -189,7 +189,7 @@ var Location = function ( data ) {
 	};
 
 	//instantiate placeholder for marker object
-	this.marker = new google.maps.Marker( {} );
+	self.marker = new google.maps.Marker( {} );
 
 	//call place API using placeId
 	placesService.getDetails( Request, callback );
@@ -463,7 +463,7 @@ var Location = function ( data ) {
 	}
 
 	//Method called by list box selection that triggers the marker click event.
-	this.findSite = function ( clickedLocation ) {
+	self.findSite = function ( clickedLocation ) {
 		google.maps.event.trigger( self.marker, 'click' );
 	};
 
@@ -480,11 +480,11 @@ function ViewModel() {
 	 *queries to 10 per second and then fails.
 	 */
 
-	this.searchTerm = ko.observable( "" );
+	self.searchTerm = ko.observable( "" );
 
-	this.locationList = ko.observableArray( [] );
+	self.locationList = ko.observableArray( [] );
 
-	this.boundList = ko.observableArray( [] );
+	self.boundList = ko.observableArray( [] );
 
 	//for each JSON object, create locations KO objects and keep in array.
 	myLocations.forEach( function ( locationItem ) {
@@ -498,7 +498,7 @@ function ViewModel() {
 	 *This section handles the filtering of list box items
 	 *and returns only the locations that match the filter.
 	 */
-	this.filteredList = ko.computed( function () {
+	self.filteredList = ko.computed( function () {
 		var filter = self.searchTerm().toLowerCase();
 		if ( !filter ) {
 			self.locationList().forEach( function ( locationItem ) {
@@ -514,5 +514,6 @@ function ViewModel() {
 			} );
 		}
 	}, self );
+
 
 }
