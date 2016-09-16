@@ -183,134 +183,107 @@ var Location = function ( data ) {
 
 	self.visible = ko.observable( true );
 
+
 	//prepare a placeId object for submission to Places API
 	var Request = {
 		placeId: data.placeId
 	};
 
-	//instantiate placeholder for marker object
-	self.marker = new google.maps.Marker( {} );
-
 	//call place API using placeId
 	placesService.getDetails( Request, callback );
 
-	function callback( place, status ) {
-		var regularPic = null,
-			hoverPic = null,
-			clickPic = null;
-		var regularIcon = null,
-			hoverIcon = null,
-			clickIcon = null;
-
+	function callback( results, status ) {
 		if ( status == google.maps.places.PlacesServiceStatus.OK ) {
-			var photos = place.photos;
+			self.createMarker( results, status, self, data );
+		}
+	}
+};
 
-			if ( photos ) {
-				var infoPic = photos[ 0 ].getUrl( {
-					'maxWidth': 250,
-					'maxHeight': 200
-				} );
 
-				/**
-				 * If the results have pictures, add one to the infoWindow.
-				 */
-				var info = '<div class="container">';
-				if ( typeof ( infoPic ) !== 'undefined' ) {
-					info = info + '<div id="pic">';
-					info = info + '<img id="infoPic" src="' + infoPic + '"/>';
-					info = info + '</div>';
-					info = info + '<div id="content">';
-				}
-				if ( typeof ( place.name ) !== 'undefined' ) {
-					info = info + '<div><h3>' + place.name + '</h3></div>';
-				}
-				if ( typeof ( place.formatted_address ) !== 'undefined' ) {
-					var address_parts = [];
-					address_parts = place.formatted_address.split( ',' );
-					address_parts.forEach( function ( part ) {
-						info = info + '<div>' + part + '</div>';
-					} );
-				}
-				if ( typeof ( place.formatted_phone_number ) !== 'undefined' ) {
-					info = info + '<div>' + place.formatted_phone_number + '</div>';
-				}
-				if ( typeof ( place.international_phone_number ) !== 'undefined' ) {
-					info = info + '<div>' + place.international_phone_number + '</div>';
-				}
-				if ( typeof ( place.url ) !== 'undefined' ) {
-					info = info + '<div><a href="' + place.url + '">Google Page</a></div>';
-				}
-				if ( typeof ( place.website ) !== 'undefined' ) {
-					info = info + '<div><a href="' + place.website + '">Official Website</a></div>';
-				}
+Location.prototype.createMarker = function ( place, status, context, data ) {
+
+	var self = context;
+	var regularPic = null,
+		hoverPic = null,
+		clickPic = null;
+	var regularIcon = null,
+		hoverIcon = null,
+		clickIcon = null;
+
+	if ( status == google.maps.places.PlacesServiceStatus.OK ) {
+		var photos = place.photos;
+
+		if ( photos ) {
+			var infoPic = photos[ 0 ].getUrl( {
+				'maxWidth': 250,
+				'maxHeight': 200
+			} );
+
+			/**
+			 * If the results have pictures, add one to the infoWindow.
+			 */
+			var info = '<div class="container">';
+			if ( typeof ( infoPic ) !== 'undefined' ) {
+				info = info + '<div id="pic">';
+				info = info + '<img id="infoPic" src="' + infoPic + '"/>';
 				info = info + '</div>';
-				info = info + '</div>';
-
-				/*Create markers with images, if available.
-				 *  Otherwise use regular markers
-				 */
-				img = photos[ 0 ].getUrl( {
-					'maxWidth': 75,
-					'maxHeight': 75
-				} );
-
-				regularPic = {
-					url: img,
-				};
-
-				hoverPic = {
-					url: img,
-				};
-
-				clickPic = {
-					url: img,
-				};
-
-				self.marker = new google.maps.Marker( {
-					map: map,
-					position: place.geometry.location,
-					title: place.name,
-					icon: regularPic,
-					animation: google.maps.Animation.DROP,
-				} );
-
-			} else {
-				//If place found but no picture, then use default markers.
-				regularIcon = {
-					url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2',
-					size: new google.maps.Size( 21, 34 ),
-					origin: new google.maps.Point( 0, 0 ),
-					anchor: new google.maps.Point( 10, 34 ),
-					scaledSize: new google.maps.Size( 21, 34 )
-				};
-
-				hoverIcon = {
-					url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FFFF24|40|_|%E2%80%A2',
-					size: new google.maps.Size( 21, 34 ),
-					origin: new google.maps.Point( 0, 0 ),
-					anchor: new google.maps.Point( 10, 34 ),
-					scaledSize: new google.maps.Size( 21, 34 )
-				};
-
-				clickIcon = {
-					url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2',
-					size: new google.maps.Size( 21, 34 ),
-					origin: new google.maps.Point( 0, 0 ),
-					anchor: new google.maps.Point( 10, 34 ),
-					scaledSize: new google.maps.Size( 21, 34 )
-				};
-
-				self.marker = new google.maps.Marker( {
-					map: map,
-					position: place.geometry.location,
-					title: place.name,
-					icon: regularIcon,
-					animation: google.maps.Animation.DROP,
-
+				info = info + '<div id="content">';
+			}
+			if ( typeof ( place.name ) !== 'undefined' ) {
+				info = info + '<div><h3>' + place.name + '</h3></div>';
+			}
+			if ( typeof ( place.formatted_address ) !== 'undefined' ) {
+				var address_parts = [];
+				address_parts = place.formatted_address.split( ',' );
+				address_parts.forEach( function ( part ) {
+					info = info + '<div>' + part + '</div>';
 				} );
 			}
+			if ( typeof ( place.formatted_phone_number ) !== 'undefined' ) {
+				info = info + '<div>' + place.formatted_phone_number + '</div>';
+			}
+			if ( typeof ( place.international_phone_number ) !== 'undefined' ) {
+				info = info + '<div>' + place.international_phone_number + '</div>';
+			}
+			if ( typeof ( place.url ) !== 'undefined' ) {
+				info = info + '<div><a href="' + place.url + '">Google Page</a></div>';
+			}
+			if ( typeof ( place.website ) !== 'undefined' ) {
+				info = info + '<div><a href="' + place.website + '">Official Website</a></div>';
+			}
+			info = info + '</div>';
+			info = info + '</div>';
+
+			/*Create markers with images, if available.
+			 *  Otherwise use regular markers
+			 */
+			img = photos[ 0 ].getUrl( {
+				'maxWidth': 75,
+				'maxHeight': 75
+			} );
+
+			regularPic = {
+				url: img,
+			};
+
+			hoverPic = {
+				url: img,
+			};
+
+			clickPic = {
+				url: img,
+			};
+
+			self.marker = new google.maps.Marker( {
+				map: map,
+				position: place.geometry.location,
+				title: place.name,
+				icon: regularPic,
+				animation: google.maps.Animation.DROP,
+			} );
+
 		} else {
-			//If place can't be resolved then default to original data model fields.
+			//If place found but no picture, then use default markers.
 			regularIcon = {
 				url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2',
 				size: new google.maps.Size( 21, 34 ),
@@ -335,139 +308,171 @@ var Location = function ( data ) {
 				scaledSize: new google.maps.Size( 21, 34 )
 			};
 
+			//instantiate marker object
 			self.marker = new google.maps.Marker( {
 				map: map,
-				position: {
-					lat: data.lat,
-					lng: data.lng
-				},
-				title: data.siteName,
+				position: place.geometry.location,
+				title: place.name,
 				icon: regularIcon,
 				animation: google.maps.Animation.DROP,
+
 			} );
-
-			console.log( 'error : ' + status );
 		}
-
-		/**
-		 *Double click on marker zooms in on site instantly.
-		 *WikiInfo Panel is displayed.
-		 *Double click on marker again to zoom out.
-		 */
-		self.marker.addListener( 'dblclick', function () {
-			map = self.marker.getMap();
-			self.marker.setAnimation( null );
-
-			if ( map.getZoom() > 5 ) {
-
-				hideDetailsPanel( true );
-				map.setCenter( 0, 0 );
-				map.setZoom( 3 );
-				//map.setMapTypeID( 'styled_map' );
-			} else {
-
-				hideDetailsPanel( false );
-				closeInfoWindows();
-				map.setCenter( self.marker.getPosition() );
-				map.setZoom( 17 );
-			}
-		} );
-
-		//Hides WikiPanel if image on WikiPanel is clicked.
-		$( "#wikiPic" ).click( function () {
-			hideDetailsPanel( true );
-		} );
-
-		/**
-		 *Single click on a closes all existing infoWindows and displays
-		 *a new one for the selected marker.
-		 *Wiki query is submitted asynchronously to prepare the WikiPanel
-		 *for display.
-		 *TODO: add another UX component to allow the user to toggle the wikiPanel.
-		 */
-		self.marker.addListener( 'click', function () {
-			closeInfoWindows();
-
-			wikiQuery( self.wikiKey );
-
-			self.marker.setIcon( clickPic || clickIcon );
-			self.marker.setAnimation( google.maps.Animation.BOUNCE );
-
-			var timeoutID = setTimeout( function () {
-				self.marker.setIcon( regularPic || regularIcon );
-				self.marker.setAnimation( null );
-			}, 3000 );
-
-			self.infowindow = new google.maps.InfoWindow();
-
-			self.infowindow.setContent( info );
-			self.infowindow.open( map, self.marker );
-
-			currentInfoWindows.push( self.infowindow );
-
-			hideDetailsPanel( false );
-		} );
-
-		//Designated during list filtering.  Shows the marker on the map if "true"
-		self.showMarker = ko.computed( function () {
-			if ( self.visible() === true ) {
-				self.marker.setMap( map );
-			} else {
-				self.marker.setMap( null );
-			}
-			return true;
-		} );
-
-		//Asynchronous JSONP query to Wikipedia Web API.
-		var wikiQuery = function ( searchKey ) {
-			var wikiUrl = 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( searchKey ) + '&format=json&callback=?';
-
-			var jqxhr = $.ajax( {
-					url: wikiUrl,
-					context: this,
-					dataType: 'jsonp',
-				} ).done( function ( data ) {
-					var resp = data.query.pages;
-
-					var arrExtract = jsonPath( resp, '$..extract' );
-
-					$( '#wikiText' ).html( arrExtract[ 0 ] );
-
-					var arrThumb = jsonPath( resp, '$..thumbnail' );
-					$( '#wikiPic' ).attr( 'src', arrThumb[ 0 ].source );
-				} )
-				.fail( function ( jqXHR, textStatus ) {
-					console.log( 'error' );
-					$( '#wikiText' ).html( '<h1>Wikipedia service error : ' + textStatus + '</h1>' );
-				} );
+	} else {
+		//If place can't be resolved then default to original data model fields.
+		regularIcon = {
+			url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2',
+			size: new google.maps.Size( 21, 34 ),
+			origin: new google.maps.Point( 0, 0 ),
+			anchor: new google.maps.Point( 10, 34 ),
+			scaledSize: new google.maps.Size( 21, 34 )
 		};
 
-		//Closes any open infoWindows
-		var closeInfoWindows = function () {
-			if ( currentInfoWindows.length > 0 ) {
-				currentInfoWindows.forEach( function ( currInfoWindow ) {
-					currInfoWindow.close();
-				} );
-			}
+		hoverIcon = {
+			url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FFFF24|40|_|%E2%80%A2',
+			size: new google.maps.Size( 21, 34 ),
+			origin: new google.maps.Point( 0, 0 ),
+			anchor: new google.maps.Point( 10, 34 ),
+			scaledSize: new google.maps.Size( 21, 34 )
 		};
 
-		//Hides WikiPanel if "true", displays panel if "false"
-		var hideDetailsPanel = function ( bool ) {
-			if ( bool ) {
-				$( detailsPanel ).hide();
-			} else {
-				$( detailsPanel ).show();
-			}
+		clickIcon = {
+			url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2',
+			size: new google.maps.Size( 21, 34 ),
+			origin: new google.maps.Point( 0, 0 ),
+			anchor: new google.maps.Point( 10, 34 ),
+			scaledSize: new google.maps.Size( 21, 34 )
 		};
 
+		self.marker = new google.maps.Marker( {
+			map: map,
+			position: {
+				lat: data.lat,
+				lng: data.lng
+			},
+			title: data.siteName,
+			icon: regularIcon,
+			animation: google.maps.Animation.DROP,
+		} );
+
+		console.log( 'error : ' + status );
 	}
 
-	//Method called by list box selection that triggers the marker click event.
-	self.findSite = function ( clickedLocation ) {
-		google.maps.event.trigger( self.marker, 'click' );
-	};
+	/**
+	 *Double click on marker zooms in on site instantly.
+	 *WikiInfo Panel is displayed.
+	 *Double click on marker again to zoom out.
+	 */
+	self.marker.addListener( 'dblclick', function () {
+		map = self.marker.getMap();
+		self.marker.setAnimation( null );
 
+		if ( map.getZoom() > 5 ) {
+			//self.hideDetailsPanel( true );
+			map.setCenter( 0, 0 );
+			map.setZoom( 3 );
+		} else {
+			//self.hideDetailsPanel( false );
+			self.closeInfoWindows();
+			map.setCenter( self.marker.getPosition() );
+			map.setZoom( 17 );
+		}
+	} );
+
+	//Hides WikiPanel if image on WikiPanel is clicked.
+	$( "#wikiPic" ).click( function () {
+		self.hideDetailsPanel( true );
+	} );
+
+	/**
+	 *Single click on a closes all existing infoWindows and displays
+	 *a new one for the selected marker.
+	 *Wiki query is submitted asynchronously to prepare the WikiPanel
+	 *for display.
+	 *TODO: add another UX component to allow the user to toggle the wikiPanel.
+	 */
+	self.marker.addListener( 'click', function () {
+		self.closeInfoWindows();
+
+		self.wikiQuery( self.wikiKey );
+
+		self.marker.setIcon( clickPic || clickIcon );
+		self.marker.setAnimation( google.maps.Animation.BOUNCE );
+
+		var timeoutID = setTimeout( function () {
+			self.marker.setIcon( regularPic || regularIcon );
+			self.marker.setAnimation( null );
+		}, 3000 );
+
+		self.infowindow = new google.maps.InfoWindow();
+
+		self.infowindow.setContent( info );
+		self.infowindow.open( map, self.marker );
+
+		currentInfoWindows.push( self.infowindow );
+
+		self.hideDetailsPanel( true );
+	} );
+
+	//Designated during list filtering.  Shows the marker on the map if "true"
+	self.showMarker = ko.computed( function () {
+		if ( self.visible() === true ) {
+			self.marker.setMap( map );
+		} else {
+			self.marker.setMap( null );
+		}
+		return true;
+	} );
 };
+
+//Closes any open infoWindows
+Location.prototype.closeInfoWindows = function () {
+	if ( currentInfoWindows.length > 0 ) {
+		currentInfoWindows.forEach( function ( currInfoWindow ) {
+			currInfoWindow.close();
+		} );
+	}
+};
+
+//Hides WikiPanel if "true", displays panel if "false"
+Location.prototype.hideDetailsPanel = function ( bool ) {
+	if ( bool ) {
+		$( detailsPanel ).hide();
+	} else {
+		$( detailsPanel ).show();
+	}
+};
+
+
+//Asynchronous JSONP query to Wikipedia Web API.
+Location.prototype.wikiQuery = function ( searchKey ) {
+	var wikiUrl = 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( searchKey ) + '&format=json&callback=?';
+
+	var jqxhr = $.ajax( {
+			url: wikiUrl,
+			context: this,
+			dataType: 'jsonp',
+		} ).done( function ( data ) {
+			var resp = data.query.pages;
+
+			var arrExtract = jsonPath( resp, '$..extract' );
+
+			$( '#wikiText' ).html( arrExtract[ 0 ] );
+
+			var arrThumb = jsonPath( resp, '$..thumbnail' );
+			$( '#wikiPic' ).attr( 'src', arrThumb[ 0 ].source );
+		} )
+		.fail( function ( jqXHR, textStatus ) {
+			console.log( 'error' );
+			$( '#wikiText' ).html( '<h1>Wikipedia service error : ' + textStatus + '</h1>' );
+		} );
+};
+
+//Method called by list box selection that triggers the marker click event.
+Location.prototype.findSite = function ( clickedLocation ) {
+	google.maps.event.trigger( clickedLocation.marker, 'click' );
+};
+
 
 
 //Main KO ViewModel
