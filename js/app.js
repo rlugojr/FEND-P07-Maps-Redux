@@ -416,11 +416,7 @@ Location.prototype.createMarker = function ( place, status, context, data ) {
 
 	//Designated during list filtering.  Shows the marker on the map if "true"
 	self.showMarker = ko.computed( function () {
-		if ( self.visible() === true ) {
-			self.marker.setMap( map );
-		} else {
-			self.marker.setMap( null );
-		}
+		self.marker.setVisible( self.visible() );
 		return true;
 	} );
 };
