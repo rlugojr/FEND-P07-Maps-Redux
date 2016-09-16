@@ -202,11 +202,9 @@ var Location = function ( data ) {
 
 
 			var arrExtract = jsonPath( resp, '$..extract' );
-			console.log( JSON.stringify( arrExtract[ 0 ] ) );
 			var arrThumb = jsonPath( resp, '$..thumbnail' );
-			console.log( JSON.stringify( arrThumb[ 0 ].source ) );
 			self.wikiPic = JSON.stringify( arrThumb[ 0 ].source );
-			self.wikiText = JSON.stringify( arrExtract[ 0 ].toString );
+			self.wikiText = JSON.stringify( arrExtract[ 0 ] );
 
 			clearTimeout( wikiWait );
 		}
