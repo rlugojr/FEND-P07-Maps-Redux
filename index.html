@@ -141,10 +141,10 @@
 
 			// Set Map Options, including custom map type.
 			var mapOptions = {
-				center: {
+				center: new google.maps.LatLng({
 					lat: 0,
 					lng: 0
-				},
+				}),
 				zoom: 3,
 				mapType: 'NeonWater',
 				mapTypeControlOptions: {

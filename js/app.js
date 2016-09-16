@@ -194,15 +194,16 @@ var Location = function ( data ) {
 
 	function callback( results, status ) {
 		if ( status == google.maps.places.PlacesServiceStatus.OK ) {
-			self.createMarker( results, status, self, data );
+			self.createMarker( results, status, data );
 		}
 	}
 };
 
 
-Location.prototype.createMarker = function ( place, status, context, data ) {
+Location.prototype.createMarker = function ( place, status, data ) {
 
-	var self = context;
+	var self = this;
+	var infoPic = null;
 	var regularPic = null,
 		hoverPic = null,
 		clickPic = null;
@@ -210,153 +211,112 @@ Location.prototype.createMarker = function ( place, status, context, data ) {
 		hoverIcon = null,
 		clickIcon = null;
 
-	if ( status == google.maps.places.PlacesServiceStatus.OK ) {
-		var photos = place.photos;
+	var photos = place.photos;
 
-		if ( photos ) {
-			var infoPic = photos[ 0 ].getUrl( {
-				'maxWidth': 250,
-				'maxHeight': 200
-			} );
 
-			/**
-			 * If the results have pictures, add one to the infoWindow.
-			 */
-			var info = '<div class="container">';
-			if ( typeof ( infoPic ) !== 'undefined' ) {
-				info = info + '<div id="pic">';
-				info = info + '<img id="infoPic" src="' + infoPic + '"/>';
-				info = info + '</div>';
-				info = info + '<div id="content">';
-			}
-			if ( typeof ( place.name ) !== 'undefined' ) {
-				info = info + '<div><h3>' + place.name + '</h3></div>';
-			}
-			if ( typeof ( place.formatted_address ) !== 'undefined' ) {
-				var address_parts = [];
-				address_parts = place.formatted_address.split( ',' );
-				address_parts.forEach( function ( part ) {
-					info = info + '<div>' + part + '</div>';
-				} );
-			}
-			if ( typeof ( place.formatted_phone_number ) !== 'undefined' ) {
-				info = info + '<div>' + place.formatted_phone_number + '</div>';
-			}
-			if ( typeof ( place.international_phone_number ) !== 'undefined' ) {
-				info = info + '<div>' + place.international_phone_number + '</div>';
-			}
-			if ( typeof ( place.url ) !== 'undefined' ) {
-				info = info + '<div><a href="' + place.url + '">Google Page</a></div>';
-			}
-			if ( typeof ( place.website ) !== 'undefined' ) {
-				info = info + '<div><a href="' + place.website + '">Official Website</a></div>';
-			}
-			info = info + '</div>';
-			info = info + '</div>';
-
-			/*Create markers with images, if available.
-			 *  Otherwise use regular markers
-			 */
-			img = photos[ 0 ].getUrl( {
-				'maxWidth': 75,
-				'maxHeight': 75
-			} );
-
-			regularPic = {
-				url: img,
-			};
-
-			hoverPic = {
-				url: img,
-			};
-
-			clickPic = {
-				url: img,
-			};
-
-			self.marker = new google.maps.Marker( {
-				map: map,
-				position: place.geometry.location,
-				title: place.name,
-				icon: regularPic,
-				animation: google.maps.Animation.DROP,
-			} );
-
-		} else {
-			//If place found but no picture, then use default markers.
-			regularIcon = {
-				url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2',
-				size: new google.maps.Size( 21, 34 ),
-				origin: new google.maps.Point( 0, 0 ),
-				anchor: new google.maps.Point( 10, 34 ),
-				scaledSize: new google.maps.Size( 21, 34 )
-			};
-
-			hoverIcon = {
-				url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FFFF24|40|_|%E2%80%A2',
-				size: new google.maps.Size( 21, 34 ),
-				origin: new google.maps.Point( 0, 0 ),
-				anchor: new google.maps.Point( 10, 34 ),
-				scaledSize: new google.maps.Size( 21, 34 )
-			};
-
-			clickIcon = {
-				url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2',
-				size: new google.maps.Size( 21, 34 ),
-				origin: new google.maps.Point( 0, 0 ),
-				anchor: new google.maps.Point( 10, 34 ),
-				scaledSize: new google.maps.Size( 21, 34 )
-			};
-
-			//instantiate marker object
-			self.marker = new google.maps.Marker( {
-				map: map,
-				position: place.geometry.location,
-				title: place.name,
-				icon: regularIcon,
-				animation: google.maps.Animation.DROP,
-
-			} );
-		}
-	} else {
-		//If place can't be resolved then default to original data model fields.
-		regularIcon = {
-			url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2',
-			size: new google.maps.Size( 21, 34 ),
-			origin: new google.maps.Point( 0, 0 ),
-			anchor: new google.maps.Point( 10, 34 ),
-			scaledSize: new google.maps.Size( 21, 34 )
-		};
-
-		hoverIcon = {
-			url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FFFF24|40|_|%E2%80%A2',
-			size: new google.maps.Size( 21, 34 ),
-			origin: new google.maps.Point( 0, 0 ),
-			anchor: new google.maps.Point( 10, 34 ),
-			scaledSize: new google.maps.Size( 21, 34 )
-		};
-
-		clickIcon = {
-			url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2',
-			size: new google.maps.Size( 21, 34 ),
-			origin: new google.maps.Point( 0, 0 ),
-			anchor: new google.maps.Point( 10, 34 ),
-			scaledSize: new google.maps.Size( 21, 34 )
-		};
-
-		self.marker = new google.maps.Marker( {
-			map: map,
-			position: {
-				lat: data.lat,
-				lng: data.lng
-			},
-			title: data.siteName,
-			icon: regularIcon,
-			animation: google.maps.Animation.DROP,
+	if ( photos ) {
+		infoPic = photos[ 0 ].getUrl( {
+			'maxWidth': 250,
+			'maxHeight': 200
 		} );
 
-		console.log( 'error : ' + status );
+		/*Create markers with images, if available.
+		 *  Otherwise use regular markers
+		 */
+
+		regularPic = {
+			url: photos[ 0 ].getUrl( {
+				'maxWidth': 75,
+				'maxHeight': 75
+			} ),
+		};
+
+		hoverPic = {
+			url: photos[ 1 ].getUrl( {
+				'maxWidth': 75,
+				'maxHeight': 75
+			} ),
+		};
+
+		clickPic = {
+			url: photos[ 2 ].getUrl( {
+				'maxWidth': 75,
+				'maxHeight': 75
+			} ),
+		};
 	}
+	//If place found but no picture, then use default markers.
+	regularIcon = {
+		url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2',
+		size: new google.maps.Size( 21, 34 ),
+		origin: new google.maps.Point( 0, 0 ),
+		anchor: new google.maps.Point( 10, 34 ),
+		scaledSize: new google.maps.Size( 21, 34 )
+	};
+
+	hoverIcon = {
+		url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FFFF24|40|_|%E2%80%A2',
+		size: new google.maps.Size( 21, 34 ),
+		origin: new google.maps.Point( 0, 0 ),
+		anchor: new google.maps.Point( 10, 34 ),
+		scaledSize: new google.maps.Size( 21, 34 )
+	};
+
+	clickIcon = {
+		url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FE7569|40|_|%E2%80%A2',
+		size: new google.maps.Size( 21, 34 ),
+		origin: new google.maps.Point( 0, 0 ),
+		anchor: new google.maps.Point( 10, 34 ),
+		scaledSize: new google.maps.Size( 21, 34 )
+	};
+
+	/**
+	 * Populate the infowindow according to the available data.
+	 */
+	var info = '<div class="container">';
+	if ( typeof ( infoPic ) !== 'undefined' ) {
+		info = info + '<div id="pic">';
+		info = info + '<img id="infoPic" src="' + infoPic + '"/>';
+		info = info + '</div>';
+		info = info + '<div id="content">';
+	}
+	info = info + '<div><h3>' + ( place.name || data.siteName ) + '</h3></div>';
+	if ( typeof ( place.formatted_address ) !== 'undefined' ) {
+		var address_parts = [];
+		address_parts = place.formatted_address.split( ',' );
+		address_parts.forEach( function ( part ) {
+			info = info + '<div>' + part + '</div>';
+		} );
+	}
+	if ( typeof ( place.formatted_phone_number ) !== 'undefined' ) {
+		info = info + '<div>' + place.formatted_phone_number + '</div>';
+	}
+	if ( typeof ( place.international_phone_number ) !== 'undefined' ) {
+		info = info + '<div>' + place.international_phone_number + '</div>';
+	}
+	if ( typeof ( place.url ) !== 'undefined' ) {
+		info = info + '<div><a href="' + place.url + '">Google Page</a></div>';
+	}
+	if ( typeof ( place.website ) !== 'undefined' ) {
+		info = info + '<div><a href="' + place.website + '">Official Website</a></div>';
+	}
+	info = info + '</div>';
+	info = info + '</div>';
+
+
+	//instantiate marker object
+	self.marker = new google.maps.Marker( {
+		map: map,
+		position: ( place.geometry.location || {
+			lat: data.lat,
+			lng: data.lng
+		} ),
+		title: ( place.name || data.siteName ),
+		icon: ( regularPic || regularIcon ),
+		animation: google.maps.Animation.DROP,
+
+	} );
+
 
 	/**
 	 *Double click on marker zooms in on site instantly.
@@ -369,7 +329,10 @@ Location.prototype.createMarker = function ( place, status, context, data ) {
 
 		if ( map.getZoom() > 5 ) {
 			//self.hideDetailsPanel( true );
-			map.setCenter( 0, 0 );
+			map.setCenter( new google.maps.LatLngBounds( {
+				lat: 0,
+				lng: 0
+			} ) );
 			map.setZoom( 3 );
 		} else {
 			//self.hideDetailsPanel( false );
@@ -377,11 +340,6 @@ Location.prototype.createMarker = function ( place, status, context, data ) {
 			map.setCenter( self.marker.getPosition() );
 			map.setZoom( 17 );
 		}
-	} );
-
-	//Hides WikiPanel if image on WikiPanel is clicked.
-	$( "#wikiPic" ).click( function () {
-		self.hideDetailsPanel( true );
 	} );
 
 	/**
@@ -396,12 +354,14 @@ Location.prototype.createMarker = function ( place, status, context, data ) {
 
 		self.wikiQuery( self.wikiKey );
 
+		map.setCenter( self.marker.getPosition() );
 		self.marker.setIcon( clickPic || clickIcon );
 		self.marker.setAnimation( google.maps.Animation.BOUNCE );
 
 		var timeoutID = setTimeout( function () {
 			self.marker.setIcon( regularPic || regularIcon );
 			self.marker.setAnimation( null );
+
 		}, 3000 );
 
 		self.infowindow = new google.maps.InfoWindow();
@@ -418,6 +378,12 @@ Location.prototype.createMarker = function ( place, status, context, data ) {
 	self.showMarker = ko.computed( function () {
 		self.marker.setVisible( self.visible() );
 		return true;
+	} );
+
+
+	//Hides WikiPanel if image on WikiPanel is clicked.
+	$( "#wikiPic" ).click( function () {
+		self.hideDetailsPanel( true );
 	} );
 };
 
@@ -468,7 +434,6 @@ Location.prototype.wikiQuery = function ( searchKey ) {
 Location.prototype.findSite = function ( clickedLocation ) {
 	google.maps.event.trigger( clickedLocation.marker, 'click' );
 };
-
 
 
 //Main KO ViewModel
