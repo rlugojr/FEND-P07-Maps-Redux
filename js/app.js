@@ -169,7 +169,6 @@ $( document ).on( 'click', function ( e ) {
  */
 var Location = function ( data ) {
 	var self = this;
-	var wikiVals = [];
 
 	//Set data model
 	self.siteId = data.siteId;
@@ -182,6 +181,42 @@ var Location = function ( data ) {
 	self.country = data.country;
 
 	self.visible = ko.observable( true );
+
+	self.wikiPic = '';
+	self.wikiText = '';
+
+	this.wikiInfo = "ko.observable()";
+
+
+
+
+
+	ko.computed( function () {
+		var wikiWait = setTimeout( function () {
+			$( 'wikiText' ).html( "failed to get wikipedia resources" );
+		}, 5000 );
+
+		function wikiCallback( data ) {
+			var resp = data.query.pages;
+
+
+
+			var arrExtract = jsonPath( resp, '$..extract' );
+			console.log( JSON.stringify( arrExtract[ 0 ] ) );
+			var arrThumb = jsonPath( resp, '$..thumbnail' );
+			console.log( JSON.stringify( arrThumb[ 0 ].source ) );
+			self.wikiPic = JSON.stringify( arrThumb[ 0 ].source );
+			self.wikiText = JSON.stringify( arrExtract[ 0 ].toString );
+
+			clearTimeout( wikiWait );
+		}
+
+		$.ajax( {
+			url: 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( data.wikiKey ) + '&format=json&callback=wikiCallback',
+			dataType: 'jsonp',
+			success: wikiCallback
+		} );
+	}, this );
 
 
 	//prepare a placeId object for submission to Places API
@@ -337,7 +372,6 @@ Location.prototype.createMarker = function ( place, status, data ) {
 		} else {
 			//self.hideDetailsPanel( false );
 			self.closeInfoWindows();
-			map.setCenter( self.marker.getPosition() );
 			map.setZoom( 17 );
 		}
 	} );
@@ -351,8 +385,6 @@ Location.prototype.createMarker = function ( place, status, data ) {
 	 */
 	self.marker.addListener( 'click', function () {
 		self.closeInfoWindows();
-
-		self.wikiQuery( self.wikiKey );
 
 		map.setCenter( self.marker.getPosition() );
 		self.marker.setIcon( clickPic || clickIcon );
@@ -371,7 +403,7 @@ Location.prototype.createMarker = function ( place, status, data ) {
 
 		currentInfoWindows.push( self.infowindow );
 
-		self.hideDetailsPanel( true );
+		self.hideDetailsPanel( false );
 	} );
 
 	//Designated during list filtering.  Shows the marker on the map if "true"
@@ -403,31 +435,6 @@ Location.prototype.hideDetailsPanel = function ( bool ) {
 	} else {
 		$( detailsPanel ).show();
 	}
-};
-
-
-//Asynchronous JSONP query to Wikipedia Web API.
-Location.prototype.wikiQuery = function ( searchKey ) {
-	var wikiUrl = 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( searchKey ) + '&format=json&callback=?';
-
-	var jqxhr = $.ajax( {
-			url: wikiUrl,
-			context: this,
-			dataType: 'jsonp',
-		} ).done( function ( data ) {
-			var resp = data.query.pages;
-
-			var arrExtract = jsonPath( resp, '$..extract' );
-
-			$( '#wikiText' ).html( arrExtract[ 0 ] );
-
-			var arrThumb = jsonPath( resp, '$..thumbnail' );
-			$( '#wikiPic' ).attr( 'src', arrThumb[ 0 ].source );
-		} )
-		.fail( function ( jqXHR, textStatus ) {
-			console.log( 'error' );
-			$( '#wikiText' ).html( '<h1>Wikipedia service error : ' + textStatus + '</h1>' );
-		} );
 };
 
 //Method called by list box selection that triggers the marker click event.
