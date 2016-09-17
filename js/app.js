@@ -163,6 +163,7 @@ $( document ).on( 'click', function ( e ) {
 	}
 } );
 
+
 /**
  *This function creates an object containing Google Map objects
  *for each location in the location list.
@@ -182,16 +183,10 @@ var Location = function ( data ) {
 
 	self.visible = ko.observable( true );
 
-	self.wikiPic = '';
-	self.wikiText = '';
+	self.wikiImg = ko.observable( '' );
+	self.wikiExtract = ko.observable( '' );
 
-	this.wikiInfo = "ko.observable()";
-
-
-
-
-
-	ko.computed( function () {
+	self.wikiQuery = ko.computed( function () {
 		var wikiWait = setTimeout( function () {
 			$( 'wikiText' ).html( "failed to get wikipedia resources" );
 		}, 5000 );
@@ -199,12 +194,11 @@ var Location = function ( data ) {
 		function wikiCallback( data ) {
 			var resp = data.query.pages;
 
-
-
 			var arrExtract = jsonPath( resp, '$..extract' );
 			var arrThumb = jsonPath( resp, '$..thumbnail' );
-			self.wikiPic = JSON.stringify( arrThumb[ 0 ].source );
-			self.wikiText = JSON.stringify( arrExtract[ 0 ] );
+
+			self.wikiImg( arrThumb[ 0 ].source );
+			self.wikiExtract( arrExtract[ 0 ] );
 
 			clearTimeout( wikiWait );
 		}
@@ -382,6 +376,12 @@ Location.prototype.createMarker = function ( place, status, data ) {
 	 *TODO: add another UX component to allow the user to toggle the wikiPanel.
 	 */
 	self.marker.addListener( 'click', function () {
+
+		self.wikiQuery();
+
+		document.getElementById( "wikiPic" ).src = self.wikiImg();
+		document.getElementById( "wikiText" ).innerHTML = self.wikiExtract();
+
 		self.closeInfoWindows();
 
 		map.setCenter( self.marker.getPosition() );
@@ -485,6 +485,4 @@ function ViewModel() {
 			} );
 		}
 	}, self );
-
-
 }
