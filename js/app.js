@@ -355,7 +355,6 @@ Location.prototype.createMarker = function ( place, status, data ) {
 		self.marker.setAnimation( null );
 
 		if ( map.getZoom() > 5 ) {
-			//self.hideDetailsPanel( true );
 			map.setCenter( new google.maps.LatLngBounds( {
 				lat: 0,
 				lng: 0
