@@ -76,7 +76,6 @@ select {
     position: absolute;
     min-width: 25%;
     height: 50%;
-    z-index: 10;
     background: rgba(0, 0, 0, 0);
     top: 60px;
     left: 5px;
@@ -87,15 +86,15 @@ select {
     float: left;
     display: block;
     margin: 0 auto;
-    max-width: 300px;
-    max-height: 100%;
+    width: 300px;
+    height: 100%;
 }
 
 #wikiText {
     float: left;
     display: block;
     overflow-y: auto;
-    max-width: 300px;
+    width: 300px;
     height: 300px;
     font-size: .75em;
     background-color: rgba(0, 0, 0, 0.4);
@@ -163,7 +162,6 @@ select {
         position: absolute;
         width: 150px;
         height: 300px;
-        z-index: 10;
         background: rgba(0, 0, 0, 0);
         bottom: 20px;
         left: 5px;

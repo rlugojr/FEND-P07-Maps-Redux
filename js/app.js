@@ -152,7 +152,8 @@ var myLocations = [
 
 //set globabl variables
 var $, ko, map, bounds, placesService, styledMapType, mapTypeIds, infowindow;
-var currentInfoWindows = [];
+var currentInfoWindows = []; //tracks open infowindows to help close all at once.
+var inProgress = 0; //keeps track of pending responses from Ajax calls to Wikipedia.
 
 //Clicking anywhere other than the filter box causes the list box to hide.
 $( document ).on( 'click', function ( e ) {
@@ -180,7 +181,7 @@ var Location = function ( data ) {
 	self.placeId = data.placeId;
 	self.wikiKey = data.wikiKey;
 	self.country = data.country;
-	self.wikiResults = ko.observable( "" ).extend( {
+	self.wikiResults = ko.observable().extend( {
 		notify: 'always'
 	} );
 	self.wikiThumb = ko.computed( function () {
@@ -198,6 +199,12 @@ var Location = function ( data ) {
 
 	self.hideDetailsPanel( false );
 
+	/**
+	 *This section contains the method for sending the AJAX request to Wikipedia API with Callback function
+	 * to process JSONP responses.
+	 */
+
+
 	var wikiWait = setTimeout( function () {
 		$( 'wikiText' ).html( "failed to get wikipedia resources" );
 	}, 5000 );
@@ -213,14 +220,21 @@ var Location = function ( data ) {
 		var strExtract = JSON.stringify( arrExtract[ 0 ] );
 		var result = JSON.parse( '{"thumb":' + strImg + ',"article":' + strExtract + '}' );
 		self.wikiResults( result );
-
+		inProgress--;
+		console.log( inProgress );
 		clearTimeout( wikiWait );
 	}
+
+	inProgress++;
+	console.log( 'Added another request: ' + inProgress );
 
 	$.ajax( {
 		url: 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( data.wikiKey ) + '&format=json&callback=wikiCallback',
 		dataType: 'jsonp',
 		success: wikiCallback
+	} ).fail( function () {
+		inProgress--;
+		console.log( 'Failed request: ' + inProgress );
 	} );
 
 
