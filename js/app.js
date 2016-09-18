@@ -180,35 +180,48 @@ var Location = function ( data ) {
 	self.placeId = data.placeId;
 	self.wikiKey = data.wikiKey;
 	self.country = data.country;
+	self.wikiResults = ko.observable( "" ).extend( {
+		notify: 'always'
+	} );
+	self.wikiThumb = ko.computed( function () {
+		return self.wikiResults().thumb;
+	} ).extend( {
+		notify: 'always'
+	} );
 
+	self.wikiArticle = ko.computed( function () {
+		return self.wikiResults().article;
+	} ).extend( {
+		notify: 'always'
+	} );
 	self.visible = ko.observable( true );
 
-	self.wikiImg = ko.observable( '' );
-	self.wikiExtract = ko.observable( '' );
+	self.hideDetailsPanel( false );
 
-	self.wikiQuery = ko.computed( function () {
-		var wikiWait = setTimeout( function () {
-			$( 'wikiText' ).html( "failed to get wikipedia resources" );
-		}, 5000 );
+	var wikiWait = setTimeout( function () {
+		$( 'wikiText' ).html( "failed to get wikipedia resources" );
+	}, 5000 );
 
-		function wikiCallback( data ) {
-			var resp = data.query.pages;
+	function wikiCallback( response ) {
+		var resp = response.query.pages;
 
-			var arrExtract = jsonPath( resp, '$..extract' );
-			var arrThumb = jsonPath( resp, '$..thumbnail' );
+		var arrImg = jsonPath( resp, '$..thumbnail' );
+		var arrExtract = jsonPath( resp, '$..extract' );
 
-			self.wikiImg( arrThumb[ 0 ].source );
-			self.wikiExtract( arrExtract[ 0 ] );
 
-			clearTimeout( wikiWait );
-		}
+		var strImg = JSON.stringify( arrImg[ 0 ].source );
+		var strExtract = JSON.stringify( arrExtract[ 0 ] );
+		var result = JSON.parse( '{"thumb":' + strImg + ',"article":' + strExtract + '}' );
+		self.wikiResults( result );
 
-		$.ajax( {
-			url: 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( data.wikiKey ) + '&format=json&callback=wikiCallback',
-			dataType: 'jsonp',
-			success: wikiCallback
-		} );
-	}, this );
+		clearTimeout( wikiWait );
+	}
+
+	$.ajax( {
+		url: 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( data.wikiKey ) + '&format=json&callback=wikiCallback',
+		dataType: 'jsonp',
+		success: wikiCallback
+	} );
 
 
 	//prepare a placeId object for submission to Places API
@@ -375,11 +388,6 @@ Location.prototype.createMarker = function ( place, status, data ) {
 	 *TODO: add another UX component to allow the user to toggle the wikiPanel.
 	 */
 	self.marker.addListener( 'click', function () {
-
-		self.wikiQuery();
-
-		document.getElementById( "wikiPic" ).src = self.wikiImg();
-		document.getElementById( "wikiText" ).innerHTML = self.wikiExtract();
 
 		self.closeInfoWindows();
 
