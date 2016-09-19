@@ -181,17 +181,19 @@ var Location = function ( data ) {
 	self.placeId = data.placeId;
 	self.wikiKey = data.wikiKey;
 	self.country = data.country;
-	self.wikiResults = ko.observable().extend( {
+	self.wikiResults = ko.observable( '{"thumb":"https://placeholdit.imgix.net/~text?txtsize=33&txt=300%C3%97200&w=300&h=200","article":"Placeholder"}' ).extend( {
 		notify: 'always'
 	} );
 	self.wikiThumb = ko.computed( function () {
-		return self.wikiResults().thumb;
+		var retVal = self.wikiResults().thumb;
+		return retVal;
 	} ).extend( {
 		notify: 'always'
 	} );
 
 	self.wikiArticle = ko.computed( function () {
-		return self.wikiResults().article;
+		var retVal = self.wikiResults().article
+		return retVal;
 	} ).extend( {
 		notify: 'always'
 	} );
@@ -216,10 +218,13 @@ var Location = function ( data ) {
 		var arrExtract = jsonPath( resp, '$..extract' );
 
 
-		var strImg = JSON.stringify( arrImg[ 0 ].source );
-		var strExtract = JSON.stringify( arrExtract[ 0 ] );
-		var result = JSON.parse( '{"thumb":' + strImg + ',"article":' + strExtract + '}' );
+		var strImg = arrImg[ 0 ].source;
+		var strExtract = arrExtract[ 0 ];
+		console.log( strExtract );
+
+		var result = '{"thumb":"' + strImg + '","article":"' + strExtract + '"}';
 		self.wikiResults( result );
+
 		inProgress--;
 		console.log( inProgress );
 		clearTimeout( wikiWait );
