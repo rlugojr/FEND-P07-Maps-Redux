@@ -181,22 +181,12 @@ var Location = function ( data ) {
 	self.placeId = data.placeId;
 	self.wikiKey = data.wikiKey;
 	self.country = data.country;
-	self.wikiResults = ko.observable( '{"thumb":"https://placeholdit.imgix.net/~text?txtsize=33&txt=300%C3%97200&w=300&h=200","article":"Placeholder"}' ).extend( {
-		notify: 'always'
-	} );
-	self.wikiThumb = ko.computed( function () {
-		var retVal = self.wikiResults().thumb;
-		return retVal;
-	} ).extend( {
-		notify: 'always'
-	} );
+	//self.wikiResults = ko.observable( '{"thumb":"https://placeholdit.imgix.net/~text?txtsize=33&txt=300%C3%97200&w=300&h=200","article":"Placeholder"}' );
 
-	self.wikiArticle = ko.computed( function () {
-		var retVal = self.wikiResults().article
-		return retVal;
-	} ).extend( {
-		notify: 'always'
-	} );
+	self.wikiThumb = ko.observable( '' );
+
+	self.wikiArticle = ko.observable( '' );
+
 	self.visible = ko.observable( true );
 
 	self.hideDetailsPanel( false );
@@ -220,10 +210,12 @@ var Location = function ( data ) {
 
 		var strImg = arrImg[ 0 ].source;
 		var strExtract = arrExtract[ 0 ];
-		console.log( strExtract );
 
-		var result = '{"thumb":"' + strImg + '","article":"' + strExtract + '"}';
-		self.wikiResults( result );
+		self.wikiThumb( strImg );
+		self.wikiArticle( strExtract );
+
+		//var result = '{"thumb":"' + strImg + '","article":"' + strExtract + '"}';
+		//self.wikiResults( result );
 
 		inProgress--;
 		console.log( inProgress );
