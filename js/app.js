@@ -181,62 +181,22 @@ var Location = function ( data ) {
 	self.placeId = data.placeId;
 	self.wikiKey = data.wikiKey;
 	self.country = data.country;
+
 	self.wikiResults = ko.observable().extend( {
 		notify: 'always'
 	} );
-	self.wikiThumb = ko.computed( function () {
-		return self.wikiResults().thumb;
-	} ).extend( {
-		notify: 'always'
-	} );
 
-	self.wikiArticle = ko.computed( function () {
-		return self.wikiResults().article;
-	} ).extend( {
-		notify: 'always'
-	} );
+	self.wikiLookup( data.wikiKey );
+
+	console.log( self.wikiResults() );
+
+	self.wikiThumb = ko.observable( self.wikiResults()[ 'thumb' ] );
+
+	self.wikiArticle = ko.observable( self.wikiResults()[ 'article' ] );
+
 	self.visible = ko.observable( true );
 
 	self.hideDetailsPanel( false );
-
-	/**
-	 *This section contains the method for sending the AJAX request to Wikipedia API with Callback function
-	 * to process JSONP responses.
-	 */
-
-
-	var wikiWait = setTimeout( function () {
-		$( 'wikiText' ).html( "failed to get wikipedia resources" );
-	}, 5000 );
-
-	function wikiCallback( response ) {
-		var resp = response.query.pages;
-
-		var arrImg = jsonPath( resp, '$..thumbnail' );
-		var arrExtract = jsonPath( resp, '$..extract' );
-
-
-		var strImg = JSON.stringify( arrImg[ 0 ].source );
-		var strExtract = JSON.stringify( arrExtract[ 0 ] );
-		var result = JSON.parse( '{"thumb":' + strImg + ',"article":' + strExtract + '}' );
-		self.wikiResults( result );
-		inProgress--;
-		console.log( inProgress );
-		clearTimeout( wikiWait );
-	}
-
-	inProgress++;
-	console.log( 'Added another request: ' + inProgress );
-
-	$.ajax( {
-		url: 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( data.wikiKey ) + '&format=json&callback=wikiCallback',
-		dataType: 'jsonp',
-		success: wikiCallback
-	} ).fail( function () {
-		inProgress--;
-		console.log( 'Failed request: ' + inProgress );
-	} );
-
 
 	//prepare a placeId object for submission to Places API
 	var Request = {
@@ -251,6 +211,40 @@ var Location = function ( data ) {
 			self.createMarker( results, status, data );
 		}
 	}
+};
+
+Location.prototype.wikiLookup = function ( wikiKey ) {
+	//Calls WikiPedia API and returns an object with pic and article.
+	var self = this;
+	inProgress++;
+	console.log( 'Wiki request count (1 added): ' + inProgress );
+
+	function wikiCallback( response ) {
+		var resp = response.query.pages;
+
+		var arrImg = jsonPath( resp, '$..thumbnail' );
+		var arrExtract = jsonPath( resp, '$..extract' );
+
+
+		var strImg = JSON.stringify( arrImg[ 0 ].source );
+		var strExtract = JSON.stringify( arrExtract[ 0 ] );
+		var result = JSON.parse( '{"thumb":' + strImg + ',"article":' + strExtract + '}' );
+
+		self.wikiResults( result );
+
+		inProgress--;
+		console.log( 'Wiki request count (1 removed): ' + inProgress );
+	}
+
+	$.ajax( {
+		url: 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( wikiKey ) + '&format=json&callback=wikiCallback',
+		dataType: 'jsonp',
+		success: wikiCallback
+	} ).fail( function () {
+		inProgress--;
+		console.log( 'Failed request: ' + inProgress );
+	} );
+
 };
 
 
@@ -460,7 +454,6 @@ Location.prototype.hideDetailsPanel = function ( bool ) {
 Location.prototype.findSite = function ( clickedLocation ) {
 	google.maps.event.trigger( clickedLocation.marker, 'click' );
 };
-
 
 //Main KO ViewModel
 function ViewModel() {
