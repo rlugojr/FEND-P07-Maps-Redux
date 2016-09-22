@@ -188,18 +188,13 @@
 
 			<div class="list" id="list">
 				<select size=10 class="results" id="results" data-bind="foreach: filteredList" style="width:200px">
-					<option class="placeItem" id="placeItem" data-bind="text: siteName, value: siteId, click: findSite" style="width:200px"></option>
+					<option class="placeItem" id="placeItem" data-bind="text: siteName, value: siteId, click: $parent.changeLoc" style="width:200px"></option>
 				</select>
 			</div>
 		</div>
 		<!--WikiPanel-->
-		<div id="detailsPanel" class="overlayWiki" width="25%" height="80%" data-bind="with: filteredList">
-			<div class="wikiPart" width="100%" height="25%">
-				<img id="wikiPic" width="300px" height="200px" data-bind="attr:{src: $root.wikiThumb}" />
-			</div>
-			<div class="wikiPart" width="100%" height="75%">
-				<span id="wikiText" width="400px" height="200px" data-bind="html: $root.wikiArticle"></span>
-			</div>
+		<div id="detailsPanel" class="overlayWiki" width="25%" height="80%">
+			<div data-bind="with: wikiHTML"></div>
 		</div>
 
 		<!-- The Google API ErrorModal -->
@@ -238,6 +233,9 @@
 		<script src="js/app.js"></script>
 
 		<pre data-bind="text: ko.toJSON($data, null, 2)"></pre>
+		<hr />
+		<h2>Debug</h2>
+		<div data-bind="text: ko.toJSON(viewModel)"></div>
 	</body>
 
 </html>

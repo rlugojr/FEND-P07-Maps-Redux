@@ -151,8 +151,9 @@ var myLocations = [
 
 
 //set globabl variables
-var $, ko, map, bounds, placesService, styledMapType, mapTypeIds, infowindow;
+var $, global, ko, map, bounds, placesService, styledMapType, mapTypeIds, infowindow;
 var currentInfoWindows = []; //tracks open infowindows to help close all at once.
+var allLocations = [];
 var inProgress = 0; //keeps track of pending responses from Ajax calls to Wikipedia.
 
 //Clicking anywhere other than the filter box causes the list box to hide.
@@ -163,6 +164,13 @@ $( document ).on( 'click', function ( e ) {
 		$( '#results' ).hide();
 	}
 } );
+
+function arrayObjectIndexOf( myArray, searchTerm, property ) {
+	for ( var i = 0, len = myArray.length; i < len; i++ ) {
+		if ( myArray[ i ][ property ] === searchTerm ) return i;
+	}
+	return -1;
+}
 
 
 /**
@@ -181,59 +189,66 @@ var Location = function ( data ) {
 	self.placeId = data.placeId;
 	self.wikiKey = data.wikiKey;
 	self.country = data.country;
-	//self.wikiResults = ko.observable( '{"thumb":"https://placeholdit.imgix.net/~text?txtsize=33&txt=300%C3%97200&w=300&h=200","article":"Placeholder"}' );
 
-	self.wikiThumb = ko.observable( '' );
+	self.wikiHTML = ko.computed( function () {
+		var wikiHTML;
+		/**
+		 *This section contains the method for sending the AJAX request to Wikipedia API with Callback function
+		 * to process JSONP responses.
+		 */
 
-	self.wikiArticle = ko.observable( '' );
+		var wikiWait = setTimeout( function () {
+			$( 'wikiText' ).html( "failed to get wikipedia resources" );
+		}, 2000 );
 
-	self.visible = ko.observable( true );
+		inProgress++;
+		console.log( 'Added another request: ' + inProgress );
+		console.log( 'WikiKey: ' + data.wikiKey );
+
+		request = $.ajax( {
+			url: 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( data.wikiKey ) + '&format=json&callback=?',
+			dataType: 'json'
+		} );
+
+		request.done( function ( response ) {
+			var resp = response.query.pages;
+
+			var arrImg = jsonPath( resp, '$..thumbnail' );
+			var arrExtract = jsonPath( resp, '$..extract' );
+
+
+			var strImg = JSON.stringify( arrImg[ 0 ].source );
+			var strExtract = JSON.stringify( arrExtract[ 0 ] );
+
+			wikiHTML = '<div>';
+			wikiHTML = wikiHTML + '<img src=' + strImg + ' />';
+			wikiHTML = wikiHTML + '<img src=' + strImg + ' />';
+			wikiHTML = wikiHTML + '<span>' + strExtract + '</span>';
+			wikiHTML = wikiHTML + '</div>';
+
+			inProgress--;
+			console.log( inProgress );
+			clearTimeout( wikiWait );
+			return wikiHTML;
+		} );
+
+		request.fail( function () {
+			inProgress--;
+			console.log( 'Failed request: ' + inProgress );
+		} );
+
+
+
+	}, self );
 
 	self.hideDetailsPanel( false );
 
-	/**
-	 *This section contains the method for sending the AJAX request to Wikipedia API with Callback function
-	 * to process JSONP responses.
-	 */
+	self.currLocation = ko.observable();
 
+	self.visible = ko.observable( true );
 
-	var wikiWait = setTimeout( function () {
-		$( 'wikiText' ).html( "failed to get wikipedia resources" );
-	}, 5000 );
-
-	function wikiCallback( response ) {
-		var resp = response.query.pages;
-
-		var arrImg = jsonPath( resp, '$..thumbnail' );
-		var arrExtract = jsonPath( resp, '$..extract' );
-
-
-		var strImg = arrImg[ 0 ].source;
-		var strExtract = arrExtract[ 0 ];
-
-		self.wikiThumb( strImg );
-		self.wikiArticle( strExtract );
-
-		//var result = '{"thumb":"' + strImg + '","article":"' + strExtract + '"}';
-		//self.wikiResults( result );
-
-		inProgress--;
-		console.log( inProgress );
-		clearTimeout( wikiWait );
-	}
-
-	inProgress++;
-	console.log( 'Added another request: ' + inProgress );
-
-	$.ajax( {
-		url: 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( data.wikiKey ) + '&format=json&callback=wikiCallback',
-		dataType: 'jsonp',
-		success: wikiCallback
-	} ).fail( function () {
-		inProgress--;
-		console.log( 'Failed request: ' + inProgress );
-	} );
-
+	self.hasChanged = ko.observable( false );
+	// this function below will be executed when the name is changed
 
 	//prepare a placeId object for submission to Places API
 	var Request = {
@@ -368,7 +383,6 @@ Location.prototype.createMarker = function ( place, status, data ) {
 
 	} );
 
-
 	/**
 	 *Double click on marker zooms in on site instantly.
 	 *WikiInfo Panel is displayed.
@@ -391,6 +405,8 @@ Location.prototype.createMarker = function ( place, status, data ) {
 		}
 	} );
 
+
+
 	/**
 	 *Single click on a closes all existing infoWindows and displays
 	 *a new one for the selected marker.
@@ -399,8 +415,9 @@ Location.prototype.createMarker = function ( place, status, data ) {
 	 *TODO: add another UX component to allow the user to toggle the wikiPanel.
 	 */
 	self.marker.addListener( 'click', function () {
-
 		self.closeInfoWindows();
+
+		window.currLocation( allLocations[ arrayObjectIndexOf( allLocations, self.siteId, "siteId" ) ] );
 
 		map.setCenter( self.marker.getPosition() );
 		self.marker.setIcon( clickPic || clickIcon );
@@ -454,13 +471,13 @@ Location.prototype.hideDetailsPanel = function ( bool ) {
 };
 
 //Method called by list box selection that triggers the marker click event.
-Location.prototype.findSite = function ( clickedLocation ) {
-	google.maps.event.trigger( clickedLocation.marker, 'click' );
-};
+// Location.prototype.findSite = function ( clickedLocation ) {
+// 	google.maps.event.trigger( clickedLocation.marker, 'click' );
+// };
 
 
 //Main KO ViewModel
-function ViewModel() {
+var ViewModel = function () {
 	var self = this;
 
 	var iter = 1;
@@ -478,7 +495,9 @@ function ViewModel() {
 	//for each JSON object, create locations KO objects and keep in array.
 	myLocations.forEach( function ( locationItem ) {
 		window.setTimeout( function () {
-			self.locationList.push( new Location( locationItem ) );
+			var newLocation = new Location( locationItem );
+			self.locationList.push( newLocation );
+			allLocations.push( newLocation );
 		}, 225 * iter );
 		iter++;
 	}, self );
@@ -503,4 +522,13 @@ function ViewModel() {
 			} );
 		}
 	}, self );
-}
+
+	window.currLocation = ko.observable( self.filteredList()[ 0 ] );
+
+	self.changeLoc = function ( clickedLocation ) {
+		//self.currLocation( clickedLocation );
+		window.currLocation( clickedLocation );
+		google.maps.event.trigger( clickedLocation.marker, 'click' );
+	};
+
+};
