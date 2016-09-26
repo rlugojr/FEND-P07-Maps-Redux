@@ -419,7 +419,7 @@ Location.prototype.createMarker = function ( place, status, data ) {
 			self.marker.setIcon( regularPic || regularIcon );
 			self.marker.setAnimation( null );
 
-		}, 3000 );
+		}, 2100 );
 
 		self.infowindow = new google.maps.InfoWindow();
 
