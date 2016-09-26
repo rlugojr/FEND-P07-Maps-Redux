@@ -4,147 +4,147 @@
 var myLocations = [
 	{
 		siteId: 1100,
-		siteName: "Cristo Redentor",
+		siteName: 'Cristo Redentor',
 		lat: -22.9518763,
 		lng: -43.2112374,
-		placeId: "ChIJP6FKmNV_mQAR3gKVAdeEyZ0",
-		wikiKey: "Christ_the_Redeemer_(statue)",
-		country: "Brazil"
+		placeId: 'ChIJP6FKmNV_mQAR3gKVAdeEyZ0',
+		wikiKey: 'Christ_the_Redeemer_(statue)',
+		country: 'Brazil'
     },
 	{
 		siteId: 438,
-		siteName: "The Great Wall of Badaling",
+		siteName: 'The Great Wall of Badaling',
 		lat: 40.357584,
 		lng: 116.017822,
-		placeId: "ChIJFbdOF22T8DURnEAe0oca7LM",
-		wikiKey: "Great_Wall_of_China",
-		country: "China"
+		placeId: 'ChIJFbdOF22T8DURnEAe0oca7LM',
+		wikiKey: 'Great_Wall_of_China',
+		country: 'China'
     },
 	{
 		siteId: 441,
-		siteName: "Mausoleum of the First Qin Emperor",
+		siteName: 'Mausoleum of the First Qin Emperor',
 		lat: 34.377564,
 		lng: 109.258013,
-		placeId: "ChIJCZeK772gZDYR3ERa7J2_JdY",
-		wikiKey: "Mausoleum_of_the_First_Qin_Emperor",
-		country: "China"
+		placeId: 'ChIJCZeK772gZDYR3ERa7J2_JdY',
+		wikiKey: 'Mausoleum_of_the_First_Qin_Emperor',
+		country: 'China'
     },
 	{
 		siteId: 526,
-		siteName: "Alcazar de Diego Colon",
+		siteName: 'Alcazar de Diego Colon',
 		lat: 18.4773854,
 		lng: -69.8830572,
-		placeId: "ChIJV3ejOxaIr44R5tZj2EjXHWU",
-		wikiKey: "Alcázar_de_Colón",
-		country: "Dominican Republic"
+		placeId: 'ChIJV3ejOxaIr44R5tZj2EjXHWU',
+		wikiKey: 'Alcázar_de_Colón',
+		country: 'Dominican Republic'
     },
 	{
 		siteId: 86,
-		siteName: "The Great Pyramid at Giza",
+		siteName: 'The Great Pyramid at Giza',
 		lat: 29.9772962,
 		lng: 31.1303015,
-		placeId: "ChIJGymPrIdFWBQRJCSloj8vDIE",
-		wikiKey: "Great_Pyramid_of_Giza",
-		country: "Egypt"
+		placeId: 'ChIJGymPrIdFWBQRJCSloj8vDIE',
+		wikiKey: 'Great_Pyramid_of_Giza',
+		country: 'Egypt'
     },
 	{
 		siteId: 87,
-		siteName: "Great Spinx of Giza",
+		siteName: 'Great Spinx of Giza',
 		lat: 29.97496,
 		lng: 31.1364519,
-		placeId: "ChIJeamuo2JPWBQRqb1mQKbw08k",
-		wikiKey: "Great_Sphinx_of_Giza",
-		country: "Egypt"
+		placeId: 'ChIJeamuo2JPWBQRqb1mQKbw08k',
+		wikiKey: 'Great_Sphinx_of_Giza',
+		country: 'Egypt'
     },
 	{
 		siteId: 80,
-		siteName: "Mont-Saint-Michel and its Bay",
+		siteName: 'Mont-Saint-Michel and its Bay',
 		lat: 48.6360166,
 		lng: -1.5133085,
-		placeId: "ChIJwccMN0RYBkgRlp_YeSIlOzs",
-		wikiKey: "Mont_Saint-Michel_Bay",
-		country: "France"
+		placeId: 'ChIJwccMN0RYBkgRlp_YeSIlOzs',
+		wikiKey: 'Mont_Saint-Michel_Bay',
+		country: 'France'
     },
 	{
 		siteId: 81,
-		siteName: "Chartres Cathedral",
+		siteName: 'Chartres Cathedral',
 		lat: 48.4478026,
 		lng: 1.4869519,
-		placeId: "ChIJlYA6J0QM5EcRISiIn2K1IBs",
-		wikiKey: "Chartres_Cathedral",
-		country: "France"
+		placeId: 'ChIJlYA6J0QM5EcRISiIn2K1IBs',
+		wikiKey: 'Chartres_Cathedral',
+		country: 'France'
     },
 	{
 		siteId: 83,
-		siteName: "Chateau de Versailles",
+		siteName: 'Chateau de Versailles',
 		lat: 48.8073846,
 		lng: 2.1052098,
-		placeId: "ChIJdUyx15R95kcRj85ZX8H8OAU",
-		wikiKey: "Palace_of_Versailles",
-		country: "France"
+		placeId: 'ChIJdUyx15R95kcRj85ZX8H8OAU',
+		wikiKey: 'Palace_of_Versailles',
+		country: 'France'
     },
 	{
 		siteId: 897,
-		siteName: "Wartburg Castle",
+		siteName: 'Wartburg Castle',
 		lat: 50.9663423,
 		lng: 10.3041484,
-		placeId: "ChIJMR-Kc3CcpEcR0OqU8OullQg",
-		wikiKey: "Wartburg",
-		country: "Germany"
+		placeId: 'ChIJMR-Kc3CcpEcR0OqU8OullQg',
+		wikiKey: 'Wartburg',
+		country: 'Germany'
     },
 	{
 		siteId: 393,
-		siteName: "Delphi",
+		siteName: 'Delphi',
 		lat: 38.4823868,
 		lng: 22.4987759,
-		placeId: "ChIJ8bYp9l15XxMRVJB-uaPfO8o",
-		wikiKey: "Delphi",
-		country: "Greece"
+		placeId: 'ChIJ8bYp9l15XxMRVJB-uaPfO8o',
+		wikiKey: 'Delphi',
+		country: 'Greece'
     },
 	{
 		siteId: 404,
-		siteName: "Acropolis, Athens",
+		siteName: 'Acropolis, Athens',
 		lat: 37.9715323,
 		lng: 23.7235552,
-		placeId: "ChIJ86z1Nxi9oRQR9g3r9ULAl1w",
-		wikiKey: "Acropolis_of_Athens",
-		country: "Greece"
+		placeId: 'ChIJ86z1Nxi9oRQR9g3r9ULAl1w',
+		wikiKey: 'Acropolis_of_Athens',
+		country: 'Greece'
     },
 	{
 		siteId: 454,
-		siteName: "Mount Athos",
+		siteName: 'Mount Athos',
 		lat: 40.1535416,
 		lng: 24.3155917,
-		placeId: "ChIJWTaPYaFIrxQREX9MeLyviB8",
-		wikiKey: "Mount_Athos",
-		country: "Greece"
+		placeId: 'ChIJWTaPYaFIrxQREX9MeLyviB8',
+		wikiKey: 'Mount_Athos',
+		country: 'Greece'
     },
 	{
 		siteId: 286,
-		siteName: "Vatican City",
+		siteName: 'Vatican City',
 		lat: 41.902141,
 		lng: 12.453926,
-		placeId: "ChIJPS3UVwqJJRMRsH46sppPCQA",
-		wikiKey: "Vatican_City",
-		country: "Holy See"
+		placeId: 'ChIJPS3UVwqJJRMRsH46sppPCQA',
+		wikiKey: 'Vatican_City',
+		country: 'Holy See'
     },
 	{
 		siteId: 252,
-		siteName: "Taj Mahal",
+		siteName: 'Taj Mahal',
 		lat: 27.1750151,
 		lng: 78.0399612,
-		placeId: "ChIJPRQcHyBxdDkRs1lw_Dj1QnU",
-		wikiKey: "Taj_Mahal",
-		country: "India"
+		placeId: 'ChIJPRQcHyBxdDkRs1lw_Dj1QnU',
+		wikiKey: 'Taj_Mahal',
+		country: 'India'
     },
 	{
 		siteId: 114,
-		siteName: "Persepolis",
+		siteName: 'Persepolis',
 		lat: 29.9355133,
 		lng: 52.8904617,
-		placeId: "ChIJba3wXF_jrT8R7s-Xacc-NgI",
-		wikiKey: "Persepolis",
-		country: "Iran"
+		placeId: 'ChIJba3wXF_jrT8R7s-Xacc-NgI',
+		wikiKey: 'Persepolis',
+		country: 'Iran'
     }
 
 ];
