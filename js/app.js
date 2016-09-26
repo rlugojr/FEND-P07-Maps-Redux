@@ -172,7 +172,6 @@ function arrayObjectIndexOf( myArray, searchTerm, property ) {
 	return -1;
 }
 
-
 /**
  *This function creates an object containing Google Map objects
  *for each location in the location list.
@@ -216,6 +215,7 @@ var Location = function ( data ) {
 		}
 	}
 };
+
 
 Location.prototype.createMarker = function ( place, status, data ) {
 
@@ -318,7 +318,6 @@ Location.prototype.createMarker = function ( place, status, data ) {
 		info = info + '<div><a href="' + place.website + '">Official Website</a></div>';
 	}
 	info = info + '</div>';
-	info = info + '<div id="wikiContent"><span data-bind="with: wikiExtract"></span></div>'
 	info = info + '</div>';
 
 	//instantiate marker object
@@ -358,6 +357,7 @@ Location.prototype.createMarker = function ( place, status, data ) {
 
 
 	var wikiInfo = function ( wikiKey ) {
+		var result;
 		var wikiWait = setTimeout( function () {
 			$( 'wikiText' ).html( "failed to get wikipedia resources" );
 		}, 5000 );
@@ -370,7 +370,6 @@ Location.prototype.createMarker = function ( place, status, data ) {
 
 			self.wikiImg( arrThumb[ 0 ].source );
 			self.wikiExtract( arrExtract[ 0 ] );
-			console.log( self.wikiExtract() );
 
 			clearTimeout( wikiWait );
 		}
@@ -381,6 +380,8 @@ Location.prototype.createMarker = function ( place, status, data ) {
 			crossDomain: true,
 			success: wikiCallback
 		} );
+
+		return result;
 	};
 
 	/**
@@ -392,10 +393,7 @@ Location.prototype.createMarker = function ( place, status, data ) {
 	 */
 	self.marker.addListener( 'click', function () {
 		self.closeInfoWindows();
-
-		wikiInfo( self.wikiKey() );
-
-		//self.currLocation( allLocations[ arrayObjectIndexOf( allLocations, self.siteId(), "siteId" ) ] );
+		self.hideDetailsPanel( true );
 
 		map.setCenter( self.marker.getPosition() );
 		self.marker.setIcon( clickPic || clickIcon );
@@ -414,7 +412,10 @@ Location.prototype.createMarker = function ( place, status, data ) {
 
 		currentInfoWindows.push( self.infowindow );
 
-		self.hideDetailsPanel( false );
+		var loc = $( '#currLocation' ).value;
+		if ( loc != self.siteId ) {
+			self.hideDetailsPanel( false );
+		}
 	} );
 
 	//Designated during list filtering.  Shows the marker on the map if "true"
@@ -423,11 +424,6 @@ Location.prototype.createMarker = function ( place, status, data ) {
 		return true;
 	} );
 
-
-	//Hides WikiPanel if image on WikiPanel is clicked.
-	$( "#wikiPic" ).click( function () {
-		self.hideDetailsPanel( true );
-	} );
 };
 
 //Closes any open infoWindows
@@ -436,6 +432,7 @@ Location.prototype.closeInfoWindows = function () {
 		currentInfoWindows.forEach( function ( currInfoWindow ) {
 			currInfoWindow.close();
 		} );
+		$( detailsPanel ).hide();
 	}
 };
 
@@ -447,6 +444,8 @@ Location.prototype.hideDetailsPanel = function ( bool ) {
 		$( detailsPanel ).show();
 	}
 };
+
+
 
 //Method called by list box selection that triggers the marker click event.
 // Location.prototype.findSite = function ( clickedLocation ) {
@@ -494,7 +493,7 @@ var ViewModel = function () {
 			return self.locationList();
 		} else {
 			return ko.utils.arrayFilter( self.locationList(), function ( locationItem ) {
-				var string = locationItem.siteName.toLowerCase();
+				var string = locationItem.siteName().toLowerCase();
 				var result = ( string.search( filter ) >= 0 );
 				locationItem.visible( result );
 				return result;
@@ -507,9 +506,15 @@ var ViewModel = function () {
 	self.changeLoc = function ( clickedLocation ) {
 		//self.currLocation( clickedLocation );
 		self.currLocation( clickedLocation );
-		google.maps.event.trigger( clickedLocation.marker, 'click' );
+		google.maps.event.trigger( clickedLocation.marker, 'click', 'fromVM' );
 	};
 
+
 };
+
+$( detailsPanel ).on( 'click', function () {
+	$( detailsPanel ).hide();
+} );
+
 
 ko.applyBindings( new ViewModel() );
