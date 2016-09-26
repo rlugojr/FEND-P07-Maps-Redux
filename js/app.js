@@ -394,6 +394,17 @@ Location.prototype.createMarker = function ( place, status, data ) {
 			dataType: "jsonp",
 			crossDomain: true,
 			success: wikiCallback
+		} ).done( function ( data ) {
+			var resp = data.query.pages;
+
+			var arrExtract = jsonPath( resp, '$..extract' );
+			var arrThumb = jsonPath( resp, '$..thumbnail' );
+
+			self.wikiImg( arrThumb[ 0 ].source );
+			self.wikiExtract( arrExtract[ 0 ] );
+		} ).fail( function ( jqXHR, textStatus ) {
+			self.hideDetailsPanel( true );
+			alert( 'Wikipedia search failed.  Please check your Internet connection and validate the Wikipedia search request.' );
 		} );
 
 	};
