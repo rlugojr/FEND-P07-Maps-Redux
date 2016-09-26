@@ -212,6 +212,21 @@ var Location = function ( data ) {
 	function callback( results, status ) {
 		if ( status == google.maps.places.PlacesServiceStatus.OK ) {
 			self.createMarker( results, status, data );
+		} else {
+			switch ( status ) {
+			case google.maps.places.PlacesServiceStatus.ZERO_RESULTS:
+				alert( data.siteName + 'not identified by Google Places. It will not be marked on the map. Please check your Internet Connection and try again.' );
+				break;
+			case google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT:
+				alert( 'Google Places query limit reached.  Throttle the number of requests per minute or updgrade to paid service.' );
+				break;
+			case google.maps.places.PlacesServiceStatus.REQUEST_DENIED:
+				alert( 'Google Places query has been denied.  Please verify your API token.' );
+				break;
+			case google.maps.places.PlacesServiceStatus.INVALID_REQUEST:
+				alert( 'Google Places request error.  Please verify the location data sent for ' + data.siteName );
+				break;
+			}
 		}
 	}
 };
