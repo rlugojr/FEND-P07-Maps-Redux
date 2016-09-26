@@ -357,7 +357,7 @@ Location.prototype.createMarker = function ( place, status, data ) {
 
 
 	var wikiInfo = function ( wikiKey ) {
-		var result;
+
 		var wikiWait = setTimeout( function () {
 			$( 'wikiText' ).html( "failed to get wikipedia resources" );
 		}, 5000 );
@@ -381,7 +381,6 @@ Location.prototype.createMarker = function ( place, status, data ) {
 			success: wikiCallback
 		} );
 
-		return result;
 	};
 
 	/**
@@ -394,6 +393,8 @@ Location.prototype.createMarker = function ( place, status, data ) {
 	self.marker.addListener( 'click', function () {
 		self.closeInfoWindows();
 		self.hideDetailsPanel( true );
+
+		wikiInfo( self.wikiKey() );
 
 		map.setCenter( self.marker.getPosition() );
 		self.marker.setIcon( clickPic || clickIcon );
@@ -412,10 +413,7 @@ Location.prototype.createMarker = function ( place, status, data ) {
 
 		currentInfoWindows.push( self.infowindow );
 
-		var loc = $( '#currLocation' ).value;
-		if ( loc != self.siteId ) {
-			self.hideDetailsPanel( false );
-		}
+		self.hideDetailsPanel( false );
 	} );
 
 	//Designated during list filtering.  Shows the marker on the map if "true"
