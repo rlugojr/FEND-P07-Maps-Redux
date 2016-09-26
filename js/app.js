@@ -181,74 +181,26 @@ var Location = function ( data ) {
 	var self = this;
 
 	//Set data model
-	self.siteId = data.siteId;
-	self.siteName = data.siteName;
-	self.lat = data.lat;
-	self.lng = data.lng;
-	self.latLng = ( data.lat + ", " + data.lng );
-	self.placeId = data.placeId;
-	self.wikiKey = data.wikiKey;
-	self.country = data.country;
+	self.siteId = ko.observable( data.siteId );
+	self.siteName = ko.observable( data.siteName );
+	self.lat = ko.observable( data.lat );
+	self.lng = ko.observable( data.lng );
+	self.latLng = ko.computed( function () {
+		return data.lat + ", " + data.lng;
+	} );
+	self.placeId = ko.observable( data.placeId );
+	self.wikiKey = ko.observable( data.wikiKey );
+	self.wikiImg = ko.observable( ' ' );
+	self.wikiExtract = ko.observable( ' ' );
 
-	self.wikiHTML = ko.computed( function () {
-		var wikiHTML;
-		/**
-		 *This section contains the method for sending the AJAX request to Wikipedia API with Callback function
-		 * to process JSONP responses.
-		 */
-
-		var wikiWait = setTimeout( function () {
-			$( 'wikiText' ).html( "failed to get wikipedia resources" );
-		}, 2000 );
-
-		inProgress++;
-		console.log( 'Added another request: ' + inProgress );
-		console.log( 'WikiKey: ' + data.wikiKey );
-
-		request = $.ajax( {
-			url: 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( data.wikiKey ) + '&format=json&callback=?',
-			dataType: 'json'
-		} );
-
-		request.done( function ( response ) {
-			var resp = response.query.pages;
-
-			var arrImg = jsonPath( resp, '$..thumbnail' );
-			var arrExtract = jsonPath( resp, '$..extract' );
-
-
-			var strImg = JSON.stringify( arrImg[ 0 ].source );
-			var strExtract = JSON.stringify( arrExtract[ 0 ] );
-
-			wikiHTML = '<div>';
-			wikiHTML = wikiHTML + '<img src=' + strImg + ' />';
-			wikiHTML = wikiHTML + '<img src=' + strImg + ' />';
-			wikiHTML = wikiHTML + '<span>' + strExtract + '</span>';
-			wikiHTML = wikiHTML + '</div>';
-
-			inProgress--;
-			console.log( inProgress );
-			clearTimeout( wikiWait );
-			return wikiHTML;
-		} );
-
-		request.fail( function () {
-			inProgress--;
-			console.log( 'Failed request: ' + inProgress );
-		} );
-
-
-
-	}, self );
+	self.country = ko.observable( data.country );
 
 	self.hideDetailsPanel( false );
-
-	self.currLocation = ko.observable();
 
 	self.visible = ko.observable( true );
 
 	self.hasChanged = ko.observable( false );
-	// this function below will be executed when the name is changed
+
 
 	//prepare a placeId object for submission to Places API
 	var Request = {
@@ -264,7 +216,6 @@ var Location = function ( data ) {
 		}
 	}
 };
-
 
 Location.prototype.createMarker = function ( place, status, data ) {
 
@@ -367,8 +318,8 @@ Location.prototype.createMarker = function ( place, status, data ) {
 		info = info + '<div><a href="' + place.website + '">Official Website</a></div>';
 	}
 	info = info + '</div>';
+	info = info + '<div id="wikiContent"><span data-bind="with: wikiExtract"></span></div>'
 	info = info + '</div>';
-
 
 	//instantiate marker object
 	self.marker = new google.maps.Marker( {
@@ -406,6 +357,31 @@ Location.prototype.createMarker = function ( place, status, data ) {
 	} );
 
 
+	var wikiInfo = function ( wikiKey ) {
+		var wikiWait = setTimeout( function () {
+			$( 'wikiText' ).html( "failed to get wikipedia resources" );
+		}, 5000 );
+
+		function wikiCallback( data ) {
+			var resp = data.query.pages;
+
+			var arrExtract = jsonPath( resp, '$..extract' );
+			var arrThumb = jsonPath( resp, '$..thumbnail' );
+
+			self.wikiImg( arrThumb[ 0 ].source );
+			self.wikiExtract( arrExtract[ 0 ] );
+			console.log( self.wikiExtract() );
+
+			clearTimeout( wikiWait );
+		}
+
+		$.ajax( {
+			url: 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( wikiKey ) + '&format=json&callback=?',
+			dataType: "jsonp",
+			crossDomain: true,
+			success: wikiCallback
+		} );
+	};
 
 	/**
 	 *Single click on a closes all existing infoWindows and displays
@@ -417,7 +393,9 @@ Location.prototype.createMarker = function ( place, status, data ) {
 	self.marker.addListener( 'click', function () {
 		self.closeInfoWindows();
 
-		window.currLocation( allLocations[ arrayObjectIndexOf( allLocations, self.siteId, "siteId" ) ] );
+		wikiInfo( self.wikiKey() );
+
+		//self.currLocation( allLocations[ arrayObjectIndexOf( allLocations, self.siteId(), "siteId" ) ] );
 
 		map.setCenter( self.marker.getPosition() );
 		self.marker.setIcon( clickPic || clickIcon );
@@ -492,6 +470,7 @@ var ViewModel = function () {
 
 	self.boundList = ko.observableArray( [] );
 
+
 	//for each JSON object, create locations KO objects and keep in array.
 	myLocations.forEach( function ( locationItem ) {
 		window.setTimeout( function () {
@@ -523,12 +502,14 @@ var ViewModel = function () {
 		}
 	}, self );
 
-	window.currLocation = ko.observable( self.filteredList()[ 0 ] );
+	self.currLocation = ko.observable( self.filteredList()[ 0 ] );
 
 	self.changeLoc = function ( clickedLocation ) {
 		//self.currLocation( clickedLocation );
-		window.currLocation( clickedLocation );
+		self.currLocation( clickedLocation );
 		google.maps.event.trigger( clickedLocation.marker, 'click' );
 	};
 
 };
+
+ko.applyBindings( new ViewModel() );

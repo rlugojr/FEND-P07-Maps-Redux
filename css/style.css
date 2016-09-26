@@ -74,9 +74,9 @@ select {
 
 .overlayWiki {
     position: absolute;
-    z-index: 10;
     min-width: 25%;
     height: 50%;
+    z-index: 10;
     background: rgba(0, 0, 0, 0);
     top: 60px;
     left: 5px;
@@ -87,15 +87,15 @@ select {
     float: left;
     display: block;
     margin: 0 auto;
-    width: 300px;
-    height: 200px;
+    max-width: 300px;
+    max-height: 100%;
 }
 
 #wikiText {
     float: left;
     display: block;
     overflow-y: auto;
-    width: 300px;
+    max-width: 300px;
     height: 300px;
     font-size: .75em;
     background-color: rgba(0, 0, 0, 0.4);
@@ -163,6 +163,7 @@ select {
         position: absolute;
         width: 150px;
         height: 300px;
+        z-index: 10;
         background: rgba(0, 0, 0, 0);
         bottom: 20px;
         left: 5px;
