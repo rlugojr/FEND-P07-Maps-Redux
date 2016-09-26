@@ -373,27 +373,11 @@ Location.prototype.createMarker = function ( place, status, data ) {
 
 	var wikiInfo = function ( wikiKey ) {
 
-		var wikiWait = setTimeout( function () {
-			$( 'wikiText' ).html( "failed to get wikipedia resources" );
-		}, 5000 );
-
-		function wikiCallback( data ) {
-			var resp = data.query.pages;
-
-			var arrExtract = jsonPath( resp, '$..extract' );
-			var arrThumb = jsonPath( resp, '$..thumbnail' );
-
-			self.wikiImg( arrThumb[ 0 ].source );
-			self.wikiExtract( arrExtract[ 0 ] );
-
-			clearTimeout( wikiWait );
-		}
-
 		$.ajax( {
 			url: 'http://en.wikipedia.com/w/api.php?action=query&prop=extracts|pageimages&exintro=true&pilimit=1&piprop=thumbnail&pithumbsize=300&titles=' + encodeURIComponent( wikiKey ) + '&format=json&callback=?',
 			dataType: "jsonp",
+			timeout: 3000,
 			crossDomain: true,
-			success: wikiCallback
 		} ).done( function ( data ) {
 			var resp = data.query.pages;
 
@@ -403,8 +387,8 @@ Location.prototype.createMarker = function ( place, status, data ) {
 			self.wikiImg( arrThumb[ 0 ].source );
 			self.wikiExtract( arrExtract[ 0 ] );
 		} ).fail( function ( jqXHR, textStatus ) {
-			self.hideDetailsPanel( true );
-			alert( 'Wikipedia search failed.  Please check your Internet connection and validate the Wikipedia search request.' );
+			self.wikiImg( 'https://siterepository.s3.amazonaws.com/4415/oops.png' );
+			self.wikiExtract( "<h2>Wikipedia Request failed to get a response.  Please check your Internet connection and try again.</h2>" );
 		} );
 
 	};
