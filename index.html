@@ -11,170 +11,170 @@
 
 		<link rel="stylesheet" href="css/awesomplete.css">
 		<link rel="stylesheet" href="css/style.css">
-	</head>
 
-	<script>
-		var map;
 
-		function initMap() {
+		<script>
+			var map;
 
-			//Set map Custom style and refresh map after options are applied
-			google.maps.visualRefresh = true;
+			function initMap() {
 
-			styledMapType = new google.maps.StyledMapType(
-				[{
-					featureType: "road.highway",
-					elementType: "labels",
-					stylers: [{
-						visibility: "on"
-					}]
-				}, {
-					featureType: "road.arterial",
-					elementType: "labels.text",
-					stylers: [{
-						visibility: "on"
-					}]
-				}, {
-					featureType: "road.local",
-					elementType: "labels.text",
-					stylers: [{
-						visibility: "on"
-					}]
-				}, {
-					featureType: "water",
-					elementType: "geometry.fill",
-					stylers: [{
-						color: "#0099dd"
-					}]
-				}, {
-					featureType: "poi.park",
-					elementType: "geometry.fill",
-					stylers: [{
-						color: "#aadd55"
-					}]
-				}, {
-					featureType: 'administrative',
-					elementType: 'labels.text.stroke',
-					stylers: [{
-						color: '#ffffff'
-					}, {
-						weight: 6
-					}]
-				}, {
-					featureType: 'administrative',
-					elementType: 'labels.text.fill',
-					stylers: [{
-						color: '#e85113'
-					}]
-				}, {
-					featureType: 'road.highway',
-					elementType: 'geometry.stroke',
-					stylers: [{
-						color: '#efe9e4'
-					}, {
-						lightness: -40
-					}]
-				}, {
-					featureType: 'transit.station',
-					stylers: [{
-						weight: 9
-					}, {
-						hue: '#e85113'
-					}]
-				}, {
-					featureType: 'road.highway',
-					elementType: 'labels.icon',
-					stylers: [{
-						visibility: 'off'
-					}]
-				}, {
-					featureType: 'water',
-					elementType: 'labels.text.stroke',
-					stylers: [{
-						lightness: 100
-					}]
-				}, {
-					featureType: 'water',
-					elementType: 'labels.text.fill',
-					stylers: [{
-						lightness: -100
-					}]
-				}, {
-					featureType: 'poi',
-					elementType: 'geometry',
-					stylers: [{
-						visibility: 'on'
-					}, {
-						color: '#f0e4d3'
-					}]
-				}, {
-					featureType: 'road.highway',
-					elementType: 'geometry.fill',
-					stylers: [{
-						color: '#efe9e4'
-					}, {
-						lightness: -25
-					}]
-				}], {
-					name: "NeonWater"
-				});
+				//Set map Custom style and refresh map after options are applied
+				google.maps.visualRefresh = true;
 
-			// Set Map Options, including custom map type.
-			var mapOptions = {
-				center: new google.maps.LatLng({
+				styledMapType = new google.maps.StyledMapType(
+					[{
+						featureType: "road.highway",
+						elementType: "labels",
+						stylers: [{
+							visibility: "on"
+						}]
+					}, {
+						featureType: "road.arterial",
+						elementType: "labels.text",
+						stylers: [{
+							visibility: "on"
+						}]
+					}, {
+						featureType: "road.local",
+						elementType: "labels.text",
+						stylers: [{
+							visibility: "on"
+						}]
+					}, {
+						featureType: "water",
+						elementType: "geometry.fill",
+						stylers: [{
+							color: "#0099dd"
+						}]
+					}, {
+						featureType: "poi.park",
+						elementType: "geometry.fill",
+						stylers: [{
+							color: "#aadd55"
+						}]
+					}, {
+						featureType: 'administrative',
+						elementType: 'labels.text.stroke',
+						stylers: [{
+							color: '#ffffff'
+						}, {
+							weight: 6
+						}]
+					}, {
+						featureType: 'administrative',
+						elementType: 'labels.text.fill',
+						stylers: [{
+							color: '#e85113'
+						}]
+					}, {
+						featureType: 'road.highway',
+						elementType: 'geometry.stroke',
+						stylers: [{
+							color: '#efe9e4'
+						}, {
+							lightness: -40
+						}]
+					}, {
+						featureType: 'transit.station',
+						stylers: [{
+							weight: 9
+						}, {
+							hue: '#e85113'
+						}]
+					}, {
+						featureType: 'road.highway',
+						elementType: 'labels.icon',
+						stylers: [{
+							visibility: 'off'
+						}]
+					}, {
+						featureType: 'water',
+						elementType: 'labels.text.stroke',
+						stylers: [{
+							lightness: 100
+						}]
+					}, {
+						featureType: 'water',
+						elementType: 'labels.text.fill',
+						stylers: [{
+							lightness: -100
+						}]
+					}, {
+						featureType: 'poi',
+						elementType: 'geometry',
+						stylers: [{
+							visibility: 'on'
+						}, {
+							color: '#f0e4d3'
+						}]
+					}, {
+						featureType: 'road.highway',
+						elementType: 'geometry.fill',
+						stylers: [{
+							color: '#efe9e4'
+						}, {
+							lightness: -25
+						}]
+					}], {
+						name: "NeonWater"
+					});
+
+				// Set Map Options, including custom map type.
+				var mapOptions = {
+					center: new google.maps.LatLng({
+						lat: 0,
+						lng: 0
+					}),
+					zoom: 3,
+					mapType: 'NeonWater',
+					mapTypeControlOptions: {
+						mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain',
+							'styled_map'
+						]
+					}
+				};
+
+				var mapElement = document.getElementById('mapDiv');
+
+				var bounds = new google.maps.LatLngBounds({
 					lat: 0,
 					lng: 0
-				}),
-				zoom: 3,
-				mapType: 'NeonWater',
-				mapTypeControlOptions: {
-					mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain',
-						'styled_map'
-					]
-				}
-			};
-
-			var mapElement = document.getElementById('mapDiv');
-
-			var bounds = new google.maps.LatLngBounds({
-				lat: 0,
-				lng: 0
-			});
+				});
 
 
-			map = new google.maps.Map(mapElement, mapOptions);
+				map = new google.maps.Map(mapElement, mapOptions);
 
-			map.mapTypes.set('styled_map', styledMapType);
-			map.setMapTypeId('styled_map');
+				map.mapTypes.set('styled_map', styledMapType);
+				map.setMapTypeId('styled_map');
 
-			/**
-			 *Fix for loss of custom map styling after zoom change.
-			 *http://stackoverflow.com/questions/3121400/google-maps-v3-how-to-change-the-map-style-based-on-zoom-l evel
-			 *This listens for zoom change and sets the map style defined at chosen zoom levels.
-			 */
-			google.maps.event.addListener(map, 'zoom_changed', function() {
-				var zoomLevel = map.getZoom();
-				// === IF Zoom Level <= 8 use mapStyleZoomedIn
-				if (zoomLevel > 5)
-					map.setMapTypeId('satellite');
-				// === If Zoom Level > 8 use mapStyleZoomedOut
-				else
-					map.setMapTypeId('styled_map');
-			});
+				/**
+				 *Fix for loss of custom map styling after zoom change.
+				 *http://stackoverflow.com/questions/3121400/google-maps-v3-how-to-change-the-map-style-based-on-zoom-l evel
+				 *This listens for zoom change and sets the map style defined at chosen zoom levels.
+				 */
+				google.maps.event.addListener(map, 'zoom_changed', function() {
+					var zoomLevel = map.getZoom();
+					// === IF Zoom Level <= 8 use mapStyleZoomedIn
+					if (zoomLevel > 5)
+						map.setMapTypeId('satellite');
+					// === If Zoom Level > 8 use mapStyleZoomedOut
+					else
+						map.setMapTypeId('styled_map');
+				});
 
-			placesService = new google.maps.places.PlacesService(map);
+				placesService = new google.maps.places.PlacesService(map);
 
 
 
-		}
-	</script>
-
+			}
+		</script>
+	</head>
 
 	<body>
 
-		<div class="map" id="mapDiv"></div>
+		<main class="map" id="mapDiv"></main>
 		<!--Input and Select boxes-->
-		<div id="searchContainer" class="overlay">
+		<nav id="searchContainer" class="overlay">
 			<div class="search" id="search">
 				<input autofocus class="awesomeplete" id="search-box" list="locationResults" data-bind="textInput: searchTerm, valueUpdate: 'afterkeydown'" style="width:200px" />
 			</div>
@@ -184,16 +184,16 @@
 					<option class="placeItem" id="placeItem" data-bind="text: siteName, value: siteId, click: $parent.changeLoc" style="width:200px"></option>
 				</select>
 			</div>
-		</div>
+		</nav>
 		<!--WikiPanel-->
-		<div id="detailsPanel" class="overlayWiki" width="25%" height="80%" data-bind="with: currLocation">
-			<div class="wikiPart" width="100%" height="25%">
+		<aside id="detailsPanel" class="overlayWiki" width="25%" height="80%" data-bind="with: currLocation">
+			<section class="wikiPart" width="100%" height="25%">
 				<img class="imgBox" id="wikiPic" data-bind="attr:{src: wikiImg, alt: siteId}" />
-			</div>
-			<div class="wikiPart" width="100%" height="75%">
+			</section>
+			<section class="wikiPart" width="100%" height="75%">
 				<span id="wikiText" width="100%" height="100%" data-bind="html: wikiExtract"></span>
-			</div>
-		</div>
+			</section>
+		</aside>
 
 		<!-- The Google API ErrorModal -->
 		<div class="modal" tabindex="">
