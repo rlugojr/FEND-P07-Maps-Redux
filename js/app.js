@@ -155,6 +155,8 @@ var $, global, ko, map, bounds, placesService, styledMapType, mapTypeIds, infowi
 var currentInfoWindows = []; //tracks open infowindows to help close all at once.
 var allLocations = [];
 var inProgress = 0; //keeps track of pending responses from Ajax calls to Wikipedia.
+var msgQueue = new ko.subscribable(); //message queue to pass info between nested KO views.
+var authentic = false; //Authentic "true" means clicked from select control, "false" means marker was clicked directly.
 
 //Clicking anywhere other than the filter box causes the list box to hide.
 $( document ).on( 'click', function ( e ) {
@@ -165,6 +167,7 @@ $( document ).on( 'click', function ( e ) {
 	}
 } );
 
+//utility function for parsing values from an object literal.
 function arrayObjectIndexOf( myArray, searchTerm, property ) {
 	for ( var i = 0, len = myArray.length; i < len; i++ ) {
 		if ( myArray[ i ][ property ] === searchTerm ) return i;
@@ -200,6 +203,11 @@ var Location = function ( data ) {
 
 	self.hasChanged = ko.observable( false );
 
+	//setup message queue for marker authentication.
+	self.currLocation = ko.observable( ' ' );
+	self.currLocation.subscribe( function ( newValue ) {
+		msgQueue.notifySubscribers( newValue, "newLocation" );
+	} );
 
 	//prepare a placeId object for submission to Places API
 	var Request = {
@@ -370,7 +378,7 @@ Location.prototype.createMarker = function ( place, status, data ) {
 		}
 	} );
 
-
+	//retrieve Wikipedia information for display in panel.
 	var wikiInfo = function ( wikiKey ) {
 
 		$.ajax( {
@@ -398,32 +406,42 @@ Location.prototype.createMarker = function ( place, status, data ) {
 	 *a new one for the selected marker.
 	 *Wiki query is submitted asynchronously to prepare the WikiPanel
 	 *for display.
+	 *Handles the authentic marker clicks by processing, or forwarding to viewmodel to be
+	 *set the location for the current item and then returned for processing.
 	 *TODO: add another UX component to allow the user to toggle the wikiPanel.
 	 */
 	self.marker.addListener( 'click', function () {
-		self.closeInfoWindows();
-		self.hideDetailsPanel( true );
+		if ( typeof authentic === 'undefined' || authentic !== true ) {
+			vm.locationList().forEach( function ( loc ) {
+				if ( loc.marker === self.marker ) {
+					self.currLocation( loc );
+				}
+			} );
+		} else {
 
-		wikiInfo( self.wikiKey() );
+			self.closeInfoWindows();
 
-		map.setCenter( self.marker.getPosition() );
-		self.marker.setIcon( clickPic || clickIcon );
-		self.marker.setAnimation( google.maps.Animation.BOUNCE );
+			wikiInfo( self.wikiKey() );
 
-		var timeoutID = setTimeout( function () {
-			self.marker.setIcon( regularPic || regularIcon );
-			self.marker.setAnimation( null );
+			map.setCenter( self.marker.getPosition() );
+			self.marker.setIcon( clickPic || clickIcon );
+			self.marker.setAnimation( google.maps.Animation.BOUNCE );
 
-		}, 2100 );
+			var timeoutID = setTimeout( function () {
+				self.marker.setIcon( regularPic || regularIcon );
+				self.marker.setAnimation( null );
 
-		self.infowindow = new google.maps.InfoWindow();
+			}, 2100 );
 
-		self.infowindow.setContent( info );
-		self.infowindow.open( map, self.marker );
+			self.infowindow = new google.maps.InfoWindow();
 
-		currentInfoWindows.push( self.infowindow );
+			self.infowindow.setContent( info );
+			self.infowindow.open( map, self.marker );
 
-		self.hideDetailsPanel( false );
+			currentInfoWindows.push( self.infowindow );
+			self.hideDetailsPanel( false );
+			authentic = false; //reset this to prevent next location from false positive check.
+		}
 	} );
 
 	//Designated during list filtering.  Shows the marker on the map if "true"
@@ -454,14 +472,7 @@ Location.prototype.hideDetailsPanel = function ( bool ) {
 };
 
 
-
-//Method called by list box selection that triggers the marker click event.
-// Location.prototype.findSite = function ( clickedLocation ) {
-// 	google.maps.event.trigger( clickedLocation.marker, 'click' );
-// };
-
-
-//Main KO ViewModel
+//Higher level KO ViewModel
 var ViewModel = function () {
 	var self = this;
 
@@ -509,20 +520,33 @@ var ViewModel = function () {
 		}
 	}, self );
 
+	//set current item that should be loaded by KO.
 	self.currLocation = ko.observable( self.filteredList()[ 0 ] );
 
+	/*
+	 *click event handler for select control.  Also handles preprocessing of locations
+	 *forwarded by the marker click event, to ensure correct state of all observables
+	 *and that the clicked location is recognized as the current location.
+	 */
 	self.changeLoc = function ( clickedLocation ) {
-		//self.currLocation( clickedLocation );
 		self.currLocation( clickedLocation );
-		google.maps.event.trigger( clickedLocation.marker, 'click', 'fromVM' );
+		authentic = true;
+		google.maps.event.trigger( clickedLocation.marker, 'click', authentic );
 	};
 
+	//message queue subscription.  Receives marker clicked locations through
+	//change of observable value.  This would not be easily accomplished without KO pub-sub.
+	msgQueue.subscribe( function ( newValue ) {
+		self.changeLoc( newValue );
+	}, self, "newLocation" );
 
 };
 
+//close wikipedia details panel on startup.
 $( detailsPanel ).on( 'click', function () {
 	$( detailsPanel ).hide();
 } );
 
-
-ko.applyBindings( new ViewModel() );
+//set viewModel to a variable for greater access to the complete viewModel.  Then apply bindings to variable.
+var vm = new ViewModel();
+ko.applyBindings( vm );
